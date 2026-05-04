@@ -72,6 +72,9 @@
   --hair:         rgba(17, 68, 140, 0.10);
   --hair-strong:  rgba(17, 68, 140, 0.22);
   --hair-bold:    rgba(17, 68, 140, 0.40);
+  /* === Structural rule (sidebars, headers, sections) — softer than --ink in NWC mode === */
+  --rule:         rgba(17, 68, 140, 0.30);   /* Editorial seam, subtle in light blue */
+  --rule-bold:    rgba(17, 68, 140, 0.55);   /* For 2px headings */
 
   /* ============ BACKWARD-COMPAT MAPPING ============ */
   --brand-50:   var(--petrol-tint);
@@ -168,6 +171,8 @@ html[data-theme="dark"] {
   --hair:         rgba(14, 14, 14, 0.10);
   --hair-strong:  rgba(14, 14, 14, 0.20);
   --hair-bold:    rgba(14, 14, 14, 0.40);
+  --rule:         var(--ink);          /* In editorial mode, full ink is correct */
+  --rule-bold:    var(--ink);
 
   /* === Brand accents — editorial archive tones === */
   --petrol:       #0E4D4D;
@@ -1775,16 +1780,16 @@ react-dom/cjs/react-dom-client.production.js:
     sustain: []
   };
   const ROLES = [
-    { id: "L1", ar: "\u0645\u062F\u062E\u0644 \u0645\u0639\u0640\u0644\u0648\u0645\u0627\u062A", en: "Data Entry", level: 1, color: "#9C9C9C" },
-    // ink-3 (lightest)
-    { id: "L2", ar: "\u0645\u0648\u0638\u0641 \u0645\u0639\u0627\u0644\u062C", en: "Processing Officer", level: 2, color: "#5D7A4A" },
-    // sage
-    { id: "L3", ar: "\u0645\u062F\u064A\u0631 \u0642\u0633\u0645", en: "Dept. Manager", level: 3, color: "#0E4D4D" },
-    // petrol
-    { id: "L4", ar: "\u0645\u062F\u064A\u0631 \u0639\u0627\u0645", en: "Director General", level: 4, color: "#9C7A30" },
-    // gold
-    { id: "L5", ar: "\u0623\u062F\u0645\u0646", en: "Administrator", level: 5, color: "#0E0E0E" }
-    // ink (highest authority)
+    { id: "L1", ar: "\u0645\u062F\u062E\u0644 \u0645\u0639\u0640\u0644\u0648\u0645\u0627\u062A", en: "Data Entry", level: 1, color: "var(--ink-3)", tone: "neutral" },
+    // محايد فاتح
+    { id: "L2", ar: "\u0645\u0648\u0638\u0641 \u0645\u0639\u0627\u0644\u062C", en: "Processing Officer", level: 2, color: "var(--moss)", tone: "ok" },
+    // أخضر — معالجة
+    { id: "L3", ar: "\u0645\u062F\u064A\u0631 \u0642\u0633\u0645", en: "Dept. Manager", level: 3, color: "var(--petrol)", tone: "info" },
+    // أزرق — إدارة
+    { id: "L4", ar: "\u0645\u062F\u064A\u0631 \u0639\u0627\u0645", en: "Director General", level: 4, color: "var(--gold)", tone: "warn" },
+    // ذهبي — تنفـيذي
+    { id: "L5", ar: "\u0623\u062F\u0645\u0646", en: "Administrator", level: 5, color: "var(--vermillion)", tone: "danger" }
+    // عنابـي — أعلى صلاحـية
   ];
   const STATUSES = [
     { id: "new", ar: "\u062C\u062F\u064A\u062F", en: "New", tone: "info" },
@@ -2053,7 +2058,7 @@ window.NwcFullLogo = NwcFullLogo;
   };
   const PriorityChip = ({ priority, lang = "ar" }) => {
     const p = PRIORITIES.find((x) => x.id === priority) || PRIORITIES[1];
-    const tone = p.id === "urgent" ? "danger" : p.id === "high" ? "warn" : p.id === "med" ? "info" : "neutral";
+    const tone = p.id === "urgent" ? "danger" : p.id === "high" ? "warn" : "neutral";
     return /* @__PURE__ */ React.createElement("span", { className: `chip ${tone}` }, p[lang]);
   };
   const DeptDot = ({ id, size = 8 }) => {
@@ -2137,11 +2142,17 @@ window.NwcFullLogo = NwcFullLogo;
   const KpiCard = ({ label, value, delta, tone = "info", suffix = "", icon, spark }) => {
     const accentMap = {
       info: "petrol",
+      // primary accent — blue in NWC, petrol-teal in paper
       ok: "moss",
+      // success — sustainability teal in NWC, moss in paper
       warn: "gold",
+      // warning — gold in both
       danger: "vermillion",
-      purple: "gold",
-      teal: "petrol",
+      // alert — coral red in NWC, vermillion in paper
+      purple: "aubergine",
+      // distinct accent — aubergine in both
+      teal: "slate",
+      // distinct accent — slate-blue in both
       neutral: "ink-3"
     };
     const accent = accentMap[tone] || "petrol";
@@ -2386,7 +2397,7 @@ window.NwcFullLogo = NwcFullLogo;
       alignItems: "center",
       gap: 12,
       padding: "16px 20px",
-      borderBottom: "1px solid var(--ink)",
+      borderBottom: "1px solid var(--rule)",
       background: "var(--paper-warm)",
       flexShrink: 0
     } }, /* @__PURE__ */ React.createElement("span", { style: {
@@ -2439,7 +2450,7 @@ window.NwcFullLogo = NwcFullLogo;
       alignItems: "center",
       gap: 8,
       padding: "14px 20px",
-      borderTop: "1px solid var(--ink)",
+      borderTop: "1px solid var(--rule)",
       background: "var(--paper-warm)",
       flexShrink: 0
     } }, footer)));
@@ -2968,7 +2979,7 @@ ${bodyHtml}
     const aside = /* @__PURE__ */ React.createElement("aside", { className: "sidebar", style: {
       width: sidebarWidth,
       background: "var(--paper-card)",
-      borderInlineEnd: "1px solid var(--ink)",
+      borderInlineEnd: "1px solid var(--rule)",
       display: "flex",
       flexDirection: "column",
       transition: "width .22s ease, transform .25s ease",
@@ -2983,7 +2994,7 @@ ${bodyHtml}
       transform: isMobile && !mobileOpen ? "translateX(100%)" : "translateX(0)"
     } }, /* @__PURE__ */ React.createElement("div", { style: {
       padding: collapsed && !isMobile ? "20px 14px" : "22px 20px",
-      borderBottom: "1px solid var(--ink)",
+      borderBottom: "1px solid var(--rule)",
       background: "var(--paper-warm)",
       display: "flex",
       alignItems: "center",
@@ -3077,7 +3088,7 @@ ${bodyHtml}
       }));
     })), !isMobile && /* @__PURE__ */ React.createElement("div", { style: {
       padding: "12px 16px",
-      borderTop: "1px solid var(--ink)",
+      borderTop: "1px solid var(--rule)",
       background: "var(--paper-warm)"
     } }, /* @__PURE__ */ React.createElement(
       "button",
@@ -3135,8 +3146,8 @@ ${bodyHtml}
       ok: "moss",
       info: "petrol",
       warn: "gold",
-      purple: "gold",
-      teal: "petrol"
+      purple: "aubergine",
+      teal: "slate"
     };
     const handleClick = (n) => {
       setNotifications(notifications.map((x) => x.id === n.id ? { ...x, unread: false } : x));
@@ -3186,7 +3197,7 @@ ${bodyHtml}
       flexDirection: "column"
     } }, /* @__PURE__ */ React.createElement("div", { style: {
       padding: "14px 18px",
-      borderBottom: "1px solid var(--ink)",
+      borderBottom: "1px solid var(--rule)",
       background: "var(--paper-warm)",
       display: "flex",
       alignItems: "center",
@@ -3258,7 +3269,7 @@ ${bodyHtml}
           color: `var(--${accent})`,
           paddingTop: 2,
           minWidth: 56
-        } }, "\u2014 ", n.tone === "danger" ? "ALERT" : n.tone === "ok" ? "OK" : n.tone === "warn" ? "WARN" : "INFO"),
+        } }, "\u2014 ", n.tone === "danger" ? "ALERT" : n.tone === "ok" ? "OK" : n.tone === "warn" ? "WARN" : n.tone === "purple" ? "NEW" : n.tone === "teal" ? "PEND" : "INFO"),
         /* @__PURE__ */ React.createElement("div", { style: { flex: 1, minWidth: 0 } }, /* @__PURE__ */ React.createElement("div", { style: {
           fontSize: 13,
           fontWeight: 700,
@@ -3322,7 +3333,7 @@ ${bodyHtml}
       minHeight: 70,
       padding: "0 24px",
       background: "var(--paper-card)",
-      borderBottom: "1px solid var(--ink)",
+      borderBottom: "1px solid var(--rule)",
       display: "flex",
       alignItems: "center",
       gap: 14,
@@ -3453,7 +3464,7 @@ ${bodyHtml}
         },
         onMouseEnter: (e) => {
           e.currentTarget.style.background = "var(--paper-warm)";
-          e.currentTarget.style.borderColor = "var(--ink)";
+          e.currentTarget.style.borderColor = "var(--petrol)";
         },
         onMouseLeave: (e) => {
           e.currentTarget.style.background = "var(--paper-card)";
@@ -3489,7 +3500,7 @@ ${bodyHtml}
       border: "1px solid var(--hair-strong)"
     } }, /* @__PURE__ */ React.createElement("div", { style: {
       padding: "16px",
-      borderBottom: "1px solid var(--ink)",
+      borderBottom: "1px solid var(--hair-strong)",
       background: "var(--paper-warm)"
     } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 12, alignItems: "center" } }, /* @__PURE__ */ React.createElement(Avatar, { name: me.ar, gender: me.gender, src: me.photo, size: 42 }), /* @__PURE__ */ React.createElement("div", { style: { minWidth: 0, flex: 1 } }, /* @__PURE__ */ React.createElement("div", { style: {
       fontSize: 14,
@@ -3669,8 +3680,8 @@ ${bodyHtml}
       minHeight: isMobile ? "auto" : "100vh",
       position: "relative",
       background: "var(--paper-card)",
-      borderInlineStart: isMobile ? "none" : "1px solid var(--ink)",
-      borderBottom: isMobile ? "1px solid var(--ink)" : "none",
+      borderInlineStart: isMobile ? "none" : "1px solid var(--hair-strong)",
+      borderBottom: isMobile ? "1px solid var(--hair-strong)" : "none",
       display: "flex",
       flexDirection: "column",
       padding: isMobile ? "24px 20px" : "40px 56px",
@@ -3735,7 +3746,7 @@ ${bodyHtml}
       { num: "\u0662\u0664/\u0667", label: "\u0645\u062A\u0627\u062D\u0640\u0629", sub: "\u062F\u0639\u0645 \u0645\u0633\u062A\u0640\u0645\u0631 \u0637\u0648\u0627\u0644 \u0627\u0644\u0623\u0633\u0640\u0628\u0648\u0639" }
     ].map((f, i) => /* @__PURE__ */ React.createElement("div", { key: i, style: {
       padding: "18px 16px",
-      borderInlineStart: i === 0 ? "none" : "1px solid var(--ink)",
+      borderInlineStart: i === 0 ? "none" : "1px solid var(--rule)",
       background: "var(--paper-card)"
     } }, /* @__PURE__ */ React.createElement("div", { className: "num", style: {
       fontSize: 22,
@@ -3940,19 +3951,19 @@ ${bodyHtml}
       /* @__PURE__ */ React.createElement("span", null, "\u062F\u062E\u0640\u0640\u0648\u0644 \u0633\u0631\u064A\u0640\u0640\u0639 \u0628\u062F\u0648\u0631 \u0645\u062D\u0640\u062F\u062F"),
       /* @__PURE__ */ React.createElement("span", { style: { flex: 1 } }),
       /* @__PURE__ */ React.createElement("span", { style: {
-        fontFamily: "'JetBrains Mono', monospace",
         fontSize: 10,
         color: "var(--ink-3)",
-        letterSpacing: "0.04em"
-      } }, "\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631: 123456"),
+        fontWeight: 500,
+        fontVariantNumeric: "tabular-nums"
+      } }, "\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631: ", /* @__PURE__ */ React.createElement("span", { className: "num" }, "123456")),
       /* @__PURE__ */ React.createElement(Icon, { name: "chevronDown", size: 11, style: {
         transform: showHints ? "rotate(180deg)" : "none",
         transition: "transform 0.2s"
       } })
     ), showHints && /* @__PURE__ */ React.createElement("div", { style: {
       marginTop: 0,
-      borderInline: "1px solid var(--ink)",
-      borderBottom: "1px solid var(--ink)"
+      borderInline: "1px solid var(--hair-strong)",
+      borderBottom: "1px solid var(--hair-strong)"
     } }, [
       { no: "10001", role: "\u0623\u062F\u0645\u0646 \u0627\u0644\u0646\u0640\u0638\u0627\u0645" },
       { no: "10002", role: "\u0645\u062F\u064A\u0640\u0631 \u0639\u0640\u0627\u0645" },
@@ -4062,7 +4073,7 @@ ${bodyHtml}
       flexWrap: "wrap",
       marginBottom: 28,
       paddingBottom: 18,
-      borderBottom: "2px solid var(--ink)"
+      borderBottom: "2px solid var(--rule-bold)"
     } }, /* @__PURE__ */ React.createElement("div", { style: { flex: "1 1 auto", minWidth: 0 } }, /* @__PURE__ */ React.createElement("div", { style: {
       fontSize: 10,
       fontWeight: 700,
@@ -4099,11 +4110,23 @@ ${bodyHtml}
     } }, /* @__PURE__ */ React.createElement(Icon, { name: "refresh", size: 11 }), "\u0622\u062E\u0631 \u062A\u062D\u062F\u064A\u0640\u062B \u0642\u0628\u0644 \u062F\u0642\u064A\u0642\u0640\u0629"), can("export_reports") && /* @__PURE__ */ React.createElement(ExportMenu, { tickets: tickets || [], title: "\u062A\u0642\u0631\u064A\u0640\u0631 \u0644\u0648\u062D\u0629 \u0627\u0644\u062A\u062D\u0640\u0643\u0645", filename: "dashboard-report", small: true }), can("create_ticket") && /* @__PURE__ */ React.createElement("button", { className: "btn primary sm hide-on-mobile", onClick: () => setNewOpen(true) }, /* @__PURE__ */ React.createElement(Icon, { name: "plus", size: 13 }), " \u0637\u0644\u0640\u0628 \u062C\u062F\u064A\u0640\u062F")));
   };
   const DashL1 = () => {
-    const { scopedTickets } = useApp();
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0623\u064F\u062F\u062E\u0640\u0644 \u0627\u0644\u064A\u0648\u0645", value: "23", icon: "plus", tone: "info", delta: 12, spark: /* @__PURE__ */ React.createElement(Sparkline, { data: [2, 5, 3, 7, 4, 8, 6] }) }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0623\u064F\u062F\u062E\u0640\u0644 \u0647\u0630\u0627 \u0627\u0644\u0623\u0633\u0640\u0628\u0648\u0639", value: "142", icon: "tickets", tone: "purple", delta: 8, spark: /* @__PURE__ */ React.createElement(Sparkline, { data: [12, 18, 15, 22, 20, 24, 31], color: "var(--purple-500)" }) }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u0631\u0641\u0648\u0636\u0629 \u0644\u0644\u062A\u0635\u0640\u062D\u064A\u062D", value: "3", icon: "alert", tone: "warn", delta: -5 }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u062D\u064F\u0648\u0650\u0651\u0644\u0640\u062A \u0628\u0646\u0640\u062C\u0627\u062D", value: "139", icon: "check", tone: "ok", delta: 15 })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 14 } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { marginBottom: 14 } }, /* @__PURE__ */ React.createElement("h3", null, "\u0622\u062E\u0631 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u0627\u0644\u062A\u064A \u0623\u062F\u062E\u0644\u0640\u062A\u0647\u0627"), /* @__PURE__ */ React.createElement("span", { className: "spacer" }), /* @__PURE__ */ React.createElement("button", { className: "btn sm ghost" }, "\u0639\u0631\u0636 \u0627\u0644\u0643\u0644")), /* @__PURE__ */ React.createElement(TicketMiniList, { tickets: scopedTickets.slice(0, 6) })), /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("h3", { style: { marginBottom: 14 } }, "\u0627\u0644\u0623\u0642\u0640\u0633\u0627\u0645 \u0627\u0644\u0623\u0643\u0640\u062B\u0631 \u062A\u062D\u0648\u064A\u0640\u0644\u0627\u064B"), /* @__PURE__ */ React.createElement(HBar, { items: BY_DEPT.slice(0, 5).map((b) => {
+    const { scopedTickets, me } = useApp();
+    const myCreated = scopedTickets.filter((t) => t.createdBy === me?.ar);
+    const today = (/* @__PURE__ */ new Date()).toISOString().slice(0, 10);
+    const createdToday = myCreated.filter((t) => (t.created || "").startsWith(today)).length;
+    const createdAll = myCreated.length;
+    const rejectedCount = myCreated.filter((t) => t.status === "overdue").length;
+    const transferredCount = myCreated.filter((t) => t.status !== "new" && t.status !== "overdue").length;
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0623\u064F\u062F\u062E\u0640\u0644 \u0627\u0644\u064A\u0648\u0645", value: String(createdToday), icon: "plus", tone: "info" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0623\u064F\u062F\u062E\u0640\u0644 \u0647\u0630\u0627 \u0627\u0644\u0623\u0633\u0640\u0628\u0648\u0639", value: String(createdAll), icon: "tickets", tone: "purple" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u0631\u0641\u0648\u0636\u0629 \u0644\u0644\u062A\u0635\u0640\u062D\u064A\u062D", value: String(rejectedCount), icon: "alert", tone: "warn" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u062D\u064F\u0648\u0650\u0651\u0644\u0640\u062A \u0628\u0646\u0640\u062C\u0627\u062D", value: String(transferredCount), icon: "check", tone: "ok" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 14 } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { marginBottom: 14 } }, /* @__PURE__ */ React.createElement("h3", null, "\u0622\u062E\u0631 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u0627\u0644\u062A\u064A \u0623\u062F\u062E\u0644\u0640\u062A\u0647\u0627"), /* @__PURE__ */ React.createElement("span", { className: "spacer" }), /* @__PURE__ */ React.createElement("button", { className: "btn sm ghost" }, "\u0639\u0631\u0636 \u0627\u0644\u0643\u0644")), /* @__PURE__ */ React.createElement(TicketMiniList, { tickets: (myCreated.length ? myCreated : scopedTickets).slice(0, 6) })), /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("h3", { style: { marginBottom: 14 } }, "\u0627\u0644\u0623\u0642\u0640\u0633\u0627\u0645 \u0627\u0644\u0623\u0643\u0640\u062B\u0631 \u062A\u062D\u0648\u064A\u0640\u0644\u0627\u064B"), /* @__PURE__ */ React.createElement(HBar, { items: BY_DEPT.slice(0, 5).map((b) => {
       const d = DEPARTMENTS.find((x) => x.id === b.id);
       return { label: d.ar, value: b.open, color: d.color };
-    }) }), /* @__PURE__ */ React.createElement("div", { style: { marginTop: 20, padding: 14, background: "var(--brand-50)", borderRadius: 10, border: "1px solid var(--brand-200)" } }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 10, marginBottom: 6 } }, /* @__PURE__ */ React.createElement(Icon, { name: "alert", size: 16, color: "var(--brand-700)" }), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: 13, color: "var(--brand-700)" } }, "\u062A\u0630\u0643\u0640\u064A\u0631")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "var(--brand-700)", margin: 0, lineHeight: 1.6 } }, "\u0644\u0627 \u064A\u0645\u0643\u0646 \u062A\u0643\u0631\u0627\u0631 \u0627\u0644\u0634\u0640\u0643\u0648\u0649 \u0644\u0646\u0641\u0633 \u0627\u0644\u0639\u0645\u0640\u064A\u0644. \u064A\u0631\u062C\u0649 \u0627\u0644\u062A\u0623\u0643\u062F \u0645\u0646 \u0631\u0642\u0645 \u0627\u0644\u0647\u0648\u064A\u0629 \u0642\u0628\u0644 \u0627\u0644\u0625\u0631\u0633\u0627\u0644.")))));
+    }) }), /* @__PURE__ */ React.createElement("div", { style: {
+      marginTop: 20,
+      padding: 14,
+      background: "var(--gold-tint)",
+      borderRadius: 0,
+      borderInlineStart: "3px solid var(--gold)"
+    } }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 10, marginBottom: 6 } }, /* @__PURE__ */ React.createElement(Icon, { name: "alert", size: 16, color: "var(--gold)" }), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: 13, color: "var(--ink)" } }, "\u062A\u0630\u0643\u0640\u064A\u0631")), /* @__PURE__ */ React.createElement("p", { style: { fontSize: 12, color: "var(--ink-1)", margin: 0, lineHeight: 1.6 } }, "\u0644\u0627 \u064A\u0645\u0643\u0646 \u062A\u0643\u0631\u0627\u0631 \u0627\u0644\u0634\u0640\u0643\u0648\u0649 \u0644\u0646\u0641\u0633 \u0627\u0644\u0639\u0645\u0640\u064A\u0644. \u064A\u0631\u062C\u0649 \u0627\u0644\u062A\u0623\u0643\u062F \u0645\u0646 \u0631\u0642\u0645 \u0627\u0644\u0647\u0648\u064A\u0629 \u0642\u0628\u0644 \u0627\u0644\u0625\u0631\u0633\u0627\u0644.")))));
   };
   const DashL2 = () => {
     const { scopedTickets } = useApp();
@@ -4129,11 +4152,12 @@ ${bodyHtml}
       closed: scopedTickets.filter((t) => t.status === "closed").length
     };
     return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0637\u0644\u0628\u0627\u062A\u0640\u064A \u0627\u0644\u0645\u0641\u0640\u062A\u0648\u062D\u0629", value: String(openCount), icon: "tickets", tone: "info" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0639\u0627\u062C\u0640\u0644\u0629 / \u0645\u062A\u0623\u062E\u0631\u0629", value: String(urgentCount), icon: "alert", tone: "danger" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u0639\u062F\u0644 \u0627\u0644\u0625\u063A\u0640\u0644\u0627\u0642", value: String(closeRate), suffix: "%", icon: "check", tone: "ok" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u062A\u0648\u0633\u0640\u0637 \u0632\u0645\u0646 \u0627\u0644\u0645\u0640\u0639\u0627\u0644\u062C\u0629", value: avgAge, suffix: "\u0633", icon: "clock", tone: "warn" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { marginBottom: 10 } }, /* @__PURE__ */ React.createElement("h3", null, "\u0642\u0627\u0626\u0640\u0645\u0629 \u0627\u0644\u0639\u0640\u0645\u0644 \u2014 \u0627\u0644\u064A\u0648\u0645"), urgentCount > 0 && /* @__PURE__ */ React.createElement("span", { className: "chip warn", style: { marginInlineStart: 6 } }, /* @__PURE__ */ React.createElement("span", { className: "num" }, urgentCount), " \u0639\u0627\u062C\u0640\u0644\u0629"), /* @__PURE__ */ React.createElement("span", { className: "spacer" }), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 6 } }, filters.map((t) => /* @__PURE__ */ React.createElement("button", { key: t.id, className: "btn sm", onClick: () => setFilter(t.id), style: {
-      background: filter === t.id ? "var(--brand-100)" : "transparent",
-      color: filter === t.id ? "var(--brand-700)" : "var(--text-secondary)",
+      background: filter === t.id ? "var(--petrol-tint)" : "transparent",
+      color: filter === t.id ? "var(--petrol)" : "var(--ink-2)",
       fontWeight: filter === t.id ? 700 : 500,
       fontSize: 12,
-      padding: "5px 10px"
+      padding: "5px 10px",
+      border: filter === t.id ? "1px solid var(--petrol)" : "1px solid transparent"
     } }, t.l)))), /* @__PURE__ */ React.createElement(TicketMiniList, { tickets: filteredTickets.slice(0, 6), showActions: true })), /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("h3", { style: { marginBottom: 14 } }, "\u062A\u0648\u0632\u064A\u0640\u0639 \u0637\u0644\u0628\u0627\u062A\u0640\u064A \u062D\u0633\u0628 \u0627\u0644\u062D\u0627\u0644\u0629"), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { justifyContent: "center", marginBottom: 14 } }, /* @__PURE__ */ React.createElement(
       DonutChart,
       {
@@ -4155,14 +4179,26 @@ ${bodyHtml}
     ].map((x, i) => /* @__PURE__ */ React.createElement("div", { key: i, className: "hstack", style: { gap: 6 } }, /* @__PURE__ */ React.createElement("span", { style: { width: 8, height: 8, borderRadius: 999, background: x.c } }), /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-secondary)" } }, x.l), /* @__PURE__ */ React.createElement("span", { className: "spacer" }), /* @__PURE__ */ React.createElement("span", { className: "num", style: { fontWeight: 600 } }, x.v)))))));
   };
   const DashL3 = ({ editMode, setEditMode }) => {
-    const { me } = useApp();
+    const { me, scopedTickets } = useApp();
     const myDept = DEPARTMENTS.find((d) => d.id === me?.dept) || {};
     const myDeptId = me?.dept || "connections";
     const myEmps = EMPLOYEES.filter((e) => e.dept === myDeptId).slice(0, 5);
     const myTypes = (TYPES[myDeptId] && TYPES[myDeptId].length ? TYPES[myDeptId] : TYPES.connections).slice(0, 6);
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { marginBottom: 14, padding: 12, background: "var(--purple-100)", border: "1px solid var(--purple-500)", borderRadius: 12, gap: 10 } }, /* @__PURE__ */ React.createElement(Icon, { name: "building", size: 18, color: "var(--purple-600)" }), /* @__PURE__ */ React.createElement("strong", { style: { color: "var(--purple-600)" } }, myDept.ar || "\u0642\u0633\u0645 "), /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-secondary)", fontSize: 12 } }, "\xB7 ", EMPLOYEES.filter((e) => e.dept === myDeptId).length, " \u0645\u0648\u0638\u0641\u0640\u064A\u0646 \u062A\u0627\u0628\u0639\u0640\u064A\u0646"), /* @__PURE__ */ React.createElement("span", { className: "spacer" }), /* @__PURE__ */ React.createElement(Toggle, { checked: editMode, onChange: setEditMode, label: "\u062A\u062E\u0635\u0640\u064A\u0635 \u0627\u0644\u0644\u0648\u062D\u0629" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0637\u0644\u0640\u0628\u0627\u062A \u0627\u0644\u0642\u0640\u0633\u0645 \u0627\u0644\u0645\u0641\u0640\u062A\u0648\u062D\u0629", value: "62", icon: "tickets", tone: "info", delta: 8, spark: /* @__PURE__ */ React.createElement(Sparkline, { data: [52, 48, 55, 60, 58, 62, 62] }) }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u063A\u0644\u0640\u0642\u0629 \u0647\u0630\u0627 \u0627\u0644\u0634\u0640\u0647\u0631", value: "410", icon: "check", tone: "ok", delta: 15 }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u062A\u062C\u0627\u0648\u0632\u062A SLA", value: "6", icon: "alert", tone: "danger", delta: -20 }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0631\u0636\u0627 \u0627\u0644\u0639\u0645\u0640\u0644\u0627\u0621", value: "94", suffix: "%", icon: "star", tone: "purple", delta: 3, spark: /* @__PURE__ */ React.createElement(Sparkline, { data: [88, 90, 91, 92, 93, 94, 94], color: "var(--purple-500)" }) })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "2fr 1fr", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(WidgetCard, { id: "l3-trend", editMode, title: "\u062D\u0631\u0643\u0629 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u2014 \u0622\u062E\u0631 \u0661\u0664 \u064A\u0648\u0645", subtitle: "\u0627\u0644\u0645\u0641\u0640\u062A\u0648\u062D\u0629 \xB7 \u0627\u0644\u0645\u063A\u0640\u0644\u0642\u0629 \xB7 \u0627\u0644\u0645\u0640\u062A\u0623\u062E\u0631\u0629" }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 14, fontSize: 12, marginBottom: 8 } }, /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--brand-600)", label: "\u0637\u0644\u0640\u0628\u0627\u062A \u062C\u062F\u064A\u062F\u0629" }), /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--ok-500)", label: "\u0645\u063A\u0644\u0640\u0642\u0629" }), /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--danger-500)", label: "\u062A\u062C\u0627\u0648\u0632\u062A SLA" })), /* @__PURE__ */ React.createElement(TrendChart, { data: TREND })), /* @__PURE__ */ React.createElement(WidgetCard, { id: "l3-emps", editMode, title: "\u0623\u062F\u0627\u0621 \u0627\u0644\u0645\u0648\u0638\u0640\u0641\u064A\u0646", subtitle: "\u062A\u0631\u062A\u064A\u0640\u0628 \u062D\u0633\u0628 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u0627\u0644\u0645\u0640\u0639\u0627\u0644\u062C\u0629" }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 10 } }, (myEmps.length ? myEmps : EMPLOYEES.filter((e) => e.role === "L2").slice(0, 5)).map((emp, i) => /* @__PURE__ */ React.createElement("div", { key: emp.id, className: "hstack", style: { gap: 10 } }, /* @__PURE__ */ React.createElement("span", { className: "num", style: { width: 18, fontSize: 11, color: "var(--text-muted)", fontWeight: 700 } }, "#", i + 1), /* @__PURE__ */ React.createElement(Avatar, { name: emp.ar, gender: emp.gender, size: 32 }), /* @__PURE__ */ React.createElement("div", { style: { flex: 1, minWidth: 0 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 13, fontWeight: 600, lineHeight: 1.2 } }, emp.ar), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: "var(--text-muted)" } }, emp.title)), /* @__PURE__ */ React.createElement("div", { style: { textAlign: "end" } }, /* @__PURE__ */ React.createElement("div", { className: "num", style: { fontSize: 14, fontWeight: 700 } }, emp.handled), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 10, color: "var(--text-muted)" } }, "\u0637\u0644\u0628"))))))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 } }, /* @__PURE__ */ React.createElement(WidgetCard, { id: "l3-types", editMode, title: "\u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u062D\u0633\u0628 \u0627\u0644\u0646\u0648\u0639" }, /* @__PURE__ */ React.createElement(HBar, { items: myTypes.map((t, i) => ({
+    const openCount = scopedTickets.filter((t) => t.status !== "closed").length;
+    const closedCount = scopedTickets.filter((t) => t.status === "closed").length;
+    const overdueCount = scopedTickets.filter((t) => t.status === "overdue" || t.sla != null && t.sla <= 1 && t.status !== "closed").length;
+    const satisfaction = 94;
+    const typeCount = (typeName) => scopedTickets.filter((t) => t.type === typeName).length;
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: {
+      marginBottom: 14,
+      padding: 12,
+      background: "var(--paper-card)",
+      borderInlineStart: `3px solid ${myDept.color || "var(--petrol)"}`,
+      border: "1px solid var(--hair-strong)",
+      gap: 10
+    } }, /* @__PURE__ */ React.createElement(Icon, { name: myDept.icon || "building", size: 18, color: myDept.color || "var(--petrol)" }), /* @__PURE__ */ React.createElement("strong", { style: { color: "var(--ink)" } }, myDept.ar || "\u0627\u0644\u0642\u0640\u0633\u0645"), /* @__PURE__ */ React.createElement("span", { style: { color: "var(--ink-3)", fontSize: 12 } }, "\xB7 ", EMPLOYEES.filter((e) => e.dept === myDeptId).length, " \u0645\u0648\u0638\u0641\u0640\u064A\u0646 \u062A\u0627\u0628\u0639\u0640\u064A\u0646"), /* @__PURE__ */ React.createElement("span", { className: "spacer" }), /* @__PURE__ */ React.createElement(Toggle, { checked: editMode, onChange: setEditMode, label: "\u062A\u062E\u0635\u0640\u064A\u0635 \u0627\u0644\u0644\u0648\u062D\u0629" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0637\u0644\u0640\u0628\u0627\u062A \u0627\u0644\u0642\u0640\u0633\u0645 \u0627\u0644\u0645\u0641\u0640\u062A\u0648\u062D\u0629", value: String(openCount), icon: "tickets", tone: "info" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u063A\u0644\u0640\u0642\u0629 \u0647\u0630\u0627 \u0627\u0644\u0634\u0640\u0647\u0631", value: String(closedCount), icon: "check", tone: "ok" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u062A\u062C\u0627\u0648\u0632\u062A SLA", value: String(overdueCount), icon: "alert", tone: "danger" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0631\u0636\u0627 \u0627\u0644\u0639\u0645\u0640\u0644\u0627\u0621", value: String(satisfaction), suffix: "%", icon: "star", tone: "purple" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "2fr 1fr", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(WidgetCard, { id: "l3-trend", editMode, title: "\u062D\u0631\u0643\u0629 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u2014 \u0622\u062E\u0631 \u0661\u0664 \u064A\u0648\u0645", subtitle: "\u0627\u0644\u0645\u0641\u0640\u062A\u0648\u062D\u0629 \xB7 \u0627\u0644\u0645\u063A\u0640\u0644\u0642\u0629 \xB7 \u0627\u0644\u0645\u0640\u062A\u0623\u062E\u0631\u0629" }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 14, fontSize: 12, marginBottom: 8 } }, /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--petrol)", label: "\u0637\u0644\u0640\u0628\u0627\u062A \u062C\u062F\u064A\u062F\u0629" }), /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--moss)", label: "\u0645\u063A\u0644\u0640\u0642\u0629" }), /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--vermillion)", label: "\u062A\u062C\u0627\u0648\u0632\u062A SLA" })), /* @__PURE__ */ React.createElement(TrendChart, { data: TREND })), /* @__PURE__ */ React.createElement(WidgetCard, { id: "l3-emps", editMode, title: "\u0623\u062F\u0627\u0621 \u0627\u0644\u0645\u0648\u0638\u0640\u0641\u064A\u0646", subtitle: "\u062A\u0631\u062A\u064A\u0640\u0628 \u062D\u0633\u0628 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u0627\u0644\u0645\u0640\u0639\u0627\u0644\u062C\u0629" }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 10 } }, (myEmps.length ? myEmps : EMPLOYEES.filter((e) => e.role === "L2").slice(0, 5)).map((emp, i) => /* @__PURE__ */ React.createElement("div", { key: emp.id, className: "hstack", style: { gap: 10 } }, /* @__PURE__ */ React.createElement("span", { className: "num", style: { width: 18, fontSize: 11, color: "var(--ink-3)", fontWeight: 700 } }, "#", i + 1), /* @__PURE__ */ React.createElement(Avatar, { name: emp.ar, gender: emp.gender, size: 32 }), /* @__PURE__ */ React.createElement("div", { style: { flex: 1, minWidth: 0 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 13, fontWeight: 600, lineHeight: 1.2 } }, emp.ar), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: "var(--ink-3)" } }, emp.title)), /* @__PURE__ */ React.createElement("div", { style: { textAlign: "end" } }, /* @__PURE__ */ React.createElement("div", { className: "num", style: { fontSize: 14, fontWeight: 700 } }, emp.handled), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 10, color: "var(--ink-3)" } }, "\u0637\u0644\u0628"))))))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 } }, /* @__PURE__ */ React.createElement(WidgetCard, { id: "l3-types", editMode, title: "\u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u062D\u0633\u0628 \u0627\u0644\u0646\u0648\u0639" }, /* @__PURE__ */ React.createElement(HBar, { items: myTypes.map((t, i) => ({
       label: t,
-      value: [28, 22, 18, 14, 9, 6][i],
+      value: typeCount(t) || 0,
       color: CHART_PALETTE[i % CHART_PALETTE.length]
     })) })), /* @__PURE__ */ React.createElement(WidgetCard, { id: "l3-sources", editMode, title: "\u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u062D\u0633\u0628 \u0627\u0644\u0645\u0640\u0635\u062F\u0631" }, /* @__PURE__ */ React.createElement(HBar, { items: BY_SOURCE.slice(0, 6).map((s, i) => {
       const src = SOURCES.find((x) => x.id === s.id);
@@ -4170,6 +4206,7 @@ ${bodyHtml}
     }) }))));
   };
   const DashL4 = ({ editMode, setEditMode }) => {
+    const { scopedTickets } = useApp();
     const [period, setPeriod] = useState("month");
     const periods = [
       { id: "day", l: "\u0627\u0644\u064A\u0648\u0645" },
@@ -4178,13 +4215,21 @@ ${bodyHtml}
       { id: "quarter", l: "\u0627\u0644\u0631\u0628\u0640\u0639" },
       { id: "year", l: "\u0627\u0644\u0633\u0640\u0646\u0629" }
     ];
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { marginBottom: 14 } }, /* @__PURE__ */ React.createElement(Toggle, { checked: editMode, onChange: setEditMode, label: "\u062A\u062E\u0635\u0640\u064A\u0635 \u0627\u0644\u0644\u0648\u062D\u0629 (\u0633\u062D\u0628 \u0648\u0625\u0639\u0627\u062F\u0629 \u062A\u0631\u062A\u064A\u0640\u0628)" }), /* @__PURE__ */ React.createElement("span", { className: "spacer" }), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 6, background: "var(--bg-card)", border: "1px solid var(--border-subtle)", padding: 4, borderRadius: 10 } }, periods.map((p) => /* @__PURE__ */ React.createElement("button", { key: p.id, className: "btn sm", onClick: () => setPeriod(p.id), style: {
-      background: period === p.id ? "var(--brand-700)" : "transparent",
-      color: period === p.id ? "#fff" : "var(--text-secondary)",
+    const openCount = scopedTickets.filter((t) => t.status !== "closed").length;
+    const closedCount = scopedTickets.filter((t) => t.status === "closed").length;
+    const overdueCount = scopedTickets.filter((t) => t.status === "overdue" || t.sla != null && t.sla <= 1 && t.status !== "closed").length;
+    const openTickets = scopedTickets.filter((t) => t.status !== "closed");
+    const avgResponse = openTickets.length > 0 ? (openTickets.reduce((sum, t) => sum + (t.ageH || 0), 0) / openTickets.length).toFixed(1) : "0";
+    const satisfaction = 92;
+    const reopenRate = 3.2;
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { marginBottom: 14 } }, /* @__PURE__ */ React.createElement(Toggle, { checked: editMode, onChange: setEditMode, label: "\u062A\u062E\u0635\u0640\u064A\u0635 \u0627\u0644\u0644\u0648\u062D\u0629 (\u0633\u062D\u0628 \u0648\u0625\u0639\u0627\u062F\u0629 \u062A\u0631\u062A\u064A\u0640\u0628)" }), /* @__PURE__ */ React.createElement("span", { className: "spacer" }), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 6, background: "var(--bg-card)", border: "1px solid var(--hair-strong)", padding: 4, borderRadius: 0 } }, periods.map((p) => /* @__PURE__ */ React.createElement("button", { key: p.id, className: "btn sm", onClick: () => setPeriod(p.id), style: {
+      background: period === p.id ? "var(--petrol)" : "transparent",
+      color: period === p.id ? "var(--paper-card)" : "var(--ink-2)",
       fontWeight: period === p.id ? 700 : 500,
       padding: "5px 12px",
-      fontSize: 12
-    } }, p.l)))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0637\u0644\u0640\u0628\u0627\u062A \u0645\u0641\u0640\u062A\u0648\u062D\u0629", value: "248", icon: "tickets", tone: "info", delta: 6, spark: /* @__PURE__ */ React.createElement(Sparkline, { data: [220, 230, 240, 235, 245, 248, 248] }) }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u063A\u0644\u0640\u0642\u0629 / \u0634\u0647\u0631\u064A\u0627\u064B", value: "1827", icon: "check", tone: "ok", delta: 12, spark: /* @__PURE__ */ React.createElement(Sparkline, { data: [1400, 1500, 1650, 1700, 1750, 1827, 1827], color: "var(--ok-500)" }) }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0631\u0636\u0627 \u0627\u0644\u0639\u0645\u0640\u0644\u0627\u0621", value: "92", suffix: "%", icon: "star", tone: "purple", delta: 4, spark: /* @__PURE__ */ React.createElement(Sparkline, { data: [86, 88, 89, 90, 91, 92, 92], color: "var(--purple-500)" }) }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u062A\u0623\u062E\u0631\u0629 SLA", value: "17", icon: "alert", tone: "danger", delta: -15 }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0632\u0645\u0646 \u0627\u0644\u0627\u0633\u0640\u062A\u062C\u0627\u0628\u0629", value: "6.4", suffix: "\u0633", icon: "clock", tone: "warn", delta: -8 }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0625\u0639\u0627\u062F\u0629 \u0641\u062A\u062D", value: "3.2", suffix: "%", icon: "refresh", tone: "teal", delta: -2 })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "2fr 1fr", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(WidgetCard, { id: "l4-trend", editMode, title: "\u0627\u0644\u0627\u062A\u0640\u062C\u0627\u0647 \u0627\u0644\u0632\u0645\u0640\u0646\u064A \u2014 \u0622\u062E\u0631 \u0661\u0664 \u064A\u0648\u0645", subtitle: "\u0645\u0642\u0627\u0631\u0646\u0629 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u0627\u0644\u0648\u0627\u0631\u062F\u0629 \u0648\u0627\u0644\u0645\u063A\u0640\u0644\u0642\u0629" }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 14, fontSize: 12, marginBottom: 8 } }, /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--brand-600)", label: "\u0637\u0644\u0640\u0628\u0627\u062A \u0648\u0627\u0631\u062F\u0629" }), /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--ok-500)", label: "\u0637\u0644\u0640\u0628\u0627\u062A \u0645\u063A\u0644\u0640\u0642\u0629" }), /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--danger-500)", label: "\u062A\u062C\u0627\u0648\u0632 SLA", shape: "bar" })), /* @__PURE__ */ React.createElement(TrendChart, { data: TREND, height: 240 })), /* @__PURE__ */ React.createElement(WidgetCard, { id: "l4-sources", editMode, title: "\u062A\u0648\u0632\u064A\u0640\u0639 \u0627\u0644\u0645\u0640\u0635\u0627\u062F\u0631" }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { justifyContent: "center", marginBottom: 14 } }, /* @__PURE__ */ React.createElement(
+      fontSize: 12,
+      border: "none"
+    } }, p.l)))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0637\u0644\u0640\u0628\u0627\u062A \u0645\u0641\u0640\u062A\u0648\u062D\u0629", value: String(openCount), icon: "tickets", tone: "info" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u063A\u0644\u0640\u0642\u0629 / \u0634\u0647\u0631\u064A\u0627\u064B", value: String(closedCount), icon: "check", tone: "ok" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0631\u0636\u0627 \u0627\u0644\u0639\u0645\u0640\u0644\u0627\u0621", value: String(satisfaction), suffix: "%", icon: "star", tone: "purple" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u062A\u0623\u062E\u0631\u0629 SLA", value: String(overdueCount), icon: "alert", tone: "danger" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0632\u0645\u0646 \u0627\u0644\u0627\u0633\u0640\u062A\u062C\u0627\u0628\u0629", value: avgResponse, suffix: "\u0633", icon: "clock", tone: "warn" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0625\u0639\u0627\u062F\u0629 \u0641\u062A\u062D", value: String(reopenRate), suffix: "%", icon: "refresh", tone: "teal" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "2fr 1fr", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(WidgetCard, { id: "l4-trend", editMode, title: "\u0627\u0644\u0627\u062A\u0640\u062C\u0627\u0647 \u0627\u0644\u0632\u0645\u0640\u0646\u064A \u2014 \u0622\u062E\u0631 \u0661\u0664 \u064A\u0648\u0645", subtitle: "\u0645\u0642\u0627\u0631\u0646\u0629 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u0627\u0644\u0648\u0627\u0631\u062F\u0629 \u0648\u0627\u0644\u0645\u063A\u0640\u0644\u0642\u0629" }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 14, fontSize: 12, marginBottom: 8 } }, /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--petrol)", label: "\u0637\u0644\u0640\u0628\u0627\u062A \u0648\u0627\u0631\u062F\u0629" }), /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--moss)", label: "\u0637\u0644\u0640\u0628\u0627\u062A \u0645\u063A\u0644\u0640\u0642\u0629" }), /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--vermillion)", label: "\u062A\u062C\u0627\u0648\u0632 SLA", shape: "bar" })), /* @__PURE__ */ React.createElement(TrendChart, { data: TREND, height: 240 })), /* @__PURE__ */ React.createElement(WidgetCard, { id: "l4-sources", editMode, title: "\u062A\u0648\u0632\u064A\u0640\u0639 \u0627\u0644\u0645\u0640\u0635\u0627\u062F\u0631" }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { justifyContent: "center", marginBottom: 14 } }, /* @__PURE__ */ React.createElement(
       DonutChart,
       {
         size: 180,
@@ -4199,37 +4244,43 @@ ${bodyHtml}
       const d = DEPARTMENTS.find((x) => x.id === b.id);
       return { label: d.ar, value: b.closed + b.open, color: d.color, breach: b.breach };
     }) })), /* @__PURE__ */ React.createElement(WidgetCard, { id: "l4-heat", editMode, title: "\u062E\u0631\u064A\u0640\u0637\u0629 \u062D\u0631\u0627\u0631\u064A\u0629 \u2014 \u0627\u0644\u0646\u0640\u0634\u0627\u0637 \u062E\u0644\u0627\u0644 \u0627\u0644\u0623\u0633\u0640\u0628\u0648\u0639", subtitle: "\u0633\u0627\u0639\u0627\u062A \u0627\u0644\u0630\u0631\u0648\u0629" }, /* @__PURE__ */ React.createElement(HeatmapGrid, null))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 } }, /* @__PURE__ */ React.createElement(WidgetCard, { id: "l4-top-types", editMode, title: "\u0623\u0639\u0644\u0649 \u0665 \u0623\u0646\u0648\u0627\u0639 \u0634\u0643\u0627\u0648\u0649", compact: true }, /* @__PURE__ */ React.createElement(MiniList, { items: [
-      { l: "\u0627\u0644\u0641\u0648\u0627\u062A\u0640\u064A\u0631 \u0627\u0644\u0645\u0631\u062A\u0641\u0640\u0639\u0629", v: 142, c: "var(--danger-500)" },
-      { l: "\u0627\u062E\u062A\u0640\u0644\u0627\u0641 \u0639\u062F\u0627\u062F", v: 98, c: "var(--warn-500)" },
-      { l: "\u062A\u0623\u062E\u0640\u064A\u0631 \u0627\u0644\u062A\u0646\u0640\u0641\u064A\u0630", v: 76, c: "var(--brand-500)" },
-      { l: "\u0646\u0642\u0644 \u0627\u0644\u0645\u0644\u0640\u0643\u064A\u0629", v: 54, c: "var(--purple-500)" },
-      { l: "\u062A\u0642\u0633\u0640\u064A\u0637", v: 43, c: "var(--teal-500)" }
+      { l: "\u0627\u0644\u0641\u0648\u0627\u062A\u0640\u064A\u0631 \u0627\u0644\u0645\u0631\u062A\u0641\u0640\u0639\u0629", v: 142, c: "var(--vermillion)" },
+      { l: "\u0627\u062E\u062A\u0640\u0644\u0627\u0641 \u0639\u062F\u0627\u062F", v: 98, c: "var(--gold)" },
+      { l: "\u062A\u0623\u062E\u0640\u064A\u0631 \u0627\u0644\u062A\u0646\u0640\u0641\u064A\u0630", v: 76, c: "var(--petrol)" },
+      { l: "\u0646\u0642\u0644 \u0627\u0644\u0645\u0644\u0640\u0643\u064A\u0629", v: 54, c: "var(--aubergine)" },
+      { l: "\u062A\u0642\u0633\u0640\u064A\u0637", v: 43, c: "var(--slate)" }
     ] })), /* @__PURE__ */ React.createElement(WidgetCard, { id: "l4-top-depts", editMode, title: "\u0627\u0644\u0623\u0642\u0640\u0633\u0627\u0645 \u0627\u0644\u0623\u0639\u0640\u0644\u0649 \u0623\u062F\u0627\u0621\u064B", compact: true }, /* @__PURE__ */ React.createElement(MiniList, { items: [
-      { l: "\u0642\u0633\u0645 \u0627\u0644\u0627\u0633\u0640\u062A\u062F\u0627\u0645\u0629", v: "98%", c: "var(--ok-500)" },
-      { l: "\u0642\u0633\u0645 \u0627\u0644\u0627\u0633\u062A\u0642\u0640\u0628\u0627\u0644", v: "96%", c: "var(--brand-500)" },
-      { l: "\u0627\u0644\u0641\u0631\u0639 \u0627\u0644\u0625\u0644\u0643\u0640\u062A\u0631\u0648\u0646\u0640\u064A", v: "93%", c: "var(--purple-500)" },
-      { l: "\u0627\u0644\u0645\u0639\u0640\u0644\u0648\u0645\u0627\u062A", v: "91%", c: "var(--teal-500)" },
-      { l: "\u0627\u0644\u062A\u062D\u0635\u0640\u064A\u0644", v: "88%", c: "var(--warn-500)" }
+      { l: "\u0642\u0633\u0645 \u0627\u0644\u0627\u0633\u0640\u062A\u062F\u0627\u0645\u0629", v: "98%", c: "var(--moss)" },
+      { l: "\u0642\u0633\u0645 \u0627\u0644\u0627\u0633\u062A\u0642\u0640\u0628\u0627\u0644", v: "96%", c: "var(--petrol-deep)" },
+      { l: "\u0627\u0644\u0641\u0631\u0639 \u0627\u0644\u0625\u0644\u0643\u0640\u062A\u0631\u0648\u0646\u0640\u064A", v: "93%", c: "var(--petrol-light)" },
+      { l: "\u0627\u0644\u0645\u0639\u0640\u0644\u0648\u0645\u0627\u062A", v: "91%", c: "var(--petrol)" },
+      { l: "\u0627\u0644\u062A\u062D\u0635\u0640\u064A\u0644", v: "88%", c: "var(--gold)" }
     ] })), /* @__PURE__ */ React.createElement(WidgetCard, { id: "l4-alerts", editMode, title: "\u062A\u0646\u0628\u064A\u0640\u0647\u0627\u062A \u062A\u0646\u0641\u0640\u064A\u0630\u064A\u0629", compact: true }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 10 } }, [
-      { t: "danger", i: "alert", h: "\u0661\u0667 \u0634\u0643\u0648\u0649 \u062A\u062C\u0627\u0648\u0632\u062A SLA", s: "\u0642\u0633\u0645 \u0627\u0644\u0641\u0648\u0627\u062A\u0640\u064A\u0631 \u062A\u062D\u062F\u064A\u062F\u0627\u064B (\u0665)" },
-      { t: "warn", i: "clock", h: "\u0627\u0631\u062A\u0640\u0641\u0627\u0639 \u0637\u0644\u0640\u0628\u0627\u062A \u0627\u0644\u0639\u062F\u0627\u062F\u0627\u062A", s: "+\u0662\u0663\u066A \u0639\u0646 \u0627\u0644\u0623\u0633\u0640\u0628\u0648\u0639 \u0627\u0644\u0645\u0627\u0636\u0640\u064A" },
-      { t: "ok", i: "check", h: "\u062A\u062D\u0640\u0633\u064F\u0651\u0646 \u0632\u0645\u0646 \u0627\u0644\u0627\u0633\u0640\u062A\u062C\u0627\u0628\u0629", s: "-\u0668\u066A \u0645\u0642\u0627\u0631\u0646\u0629 \u0628\u0627\u0644\u0634\u0640\u0647\u0631 \u0627\u0644\u0633\u0627\u0628\u0640\u0642" }
-    ].map((x, i) => /* @__PURE__ */ React.createElement("div", { key: i, className: "hstack", style: { gap: 10, alignItems: "flex-start" } }, /* @__PURE__ */ React.createElement("span", { style: { width: 28, height: 28, borderRadius: 8, background: `var(--${x.t}-100)`, color: `var(--${x.t}-600)`, display: "grid", placeItems: "center", flexShrink: 0 } }, /* @__PURE__ */ React.createElement(Icon, { name: x.i, size: 14 })), /* @__PURE__ */ React.createElement("div", { style: { minWidth: 0 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 12, fontWeight: 600 } }, x.h), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: "var(--text-muted)" } }, x.s))))))));
+      { tone: "vermillion", tint: "vermillion-tint", i: "alert", h: "\u0661\u0667 \u0634\u0643\u0648\u0649 \u062A\u062C\u0627\u0648\u0632\u062A SLA", s: "\u0642\u0633\u0645 \u0627\u0644\u0641\u0648\u0627\u062A\u0640\u064A\u0631 \u062A\u062D\u062F\u064A\u062F\u0627\u064B (\u0665)" },
+      { tone: "gold", tint: "gold-tint", i: "clock", h: "\u0627\u0631\u062A\u0640\u0641\u0627\u0639 \u0637\u0644\u0640\u0628\u0627\u062A \u0627\u0644\u0639\u062F\u0627\u062F\u0627\u062A", s: "+\u0662\u0663\u066A \u0639\u0646 \u0627\u0644\u0623\u0633\u0640\u0628\u0648\u0639 \u0627\u0644\u0645\u0627\u0636\u0640\u064A" },
+      { tone: "moss", tint: "moss-tint", i: "check", h: "\u062A\u062D\u0640\u0633\u064F\u0651\u0646 \u0632\u0645\u0646 \u0627\u0644\u0627\u0633\u0640\u062A\u062C\u0627\u0628\u0629", s: "-\u0668\u066A \u0645\u0642\u0627\u0631\u0646\u0629 \u0628\u0627\u0644\u0634\u0640\u0647\u0631 \u0627\u0644\u0633\u0627\u0628\u0640\u0642" }
+    ].map((x, i) => /* @__PURE__ */ React.createElement("div", { key: i, className: "hstack", style: { gap: 10, alignItems: "flex-start" } }, /* @__PURE__ */ React.createElement("span", { style: { width: 28, height: 28, borderRadius: 0, background: `var(--${x.tint})`, color: `var(--${x.tone})`, display: "grid", placeItems: "center", flexShrink: 0 } }, /* @__PURE__ */ React.createElement(Icon, { name: x.i, size: 14 })), /* @__PURE__ */ React.createElement("div", { style: { minWidth: 0 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 12, fontWeight: 600 } }, x.h), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: "var(--ink-3)" } }, x.s))))))));
   };
-  const DashL5 = () => /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0625\u062C\u0640\u0645\u0627\u0644\u064A \u0627\u0644\u0645\u0633\u0640\u062A\u062E\u062F\u0645\u0640\u064A\u0646", value: "68", icon: "users", tone: "info", delta: 4 }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0627\u0644\u0623\u0642\u0640\u0633\u0627\u0645 \u0627\u0644\u0646\u0634\u0640\u0637\u0629", value: "8", icon: "building", tone: "purple" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u0635\u0627\u062F\u0631 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A", value: "9", icon: "tag", tone: "teal" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0623\u0646\u0648\u0627\u0639 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A", value: "47", icon: "file", tone: "ok", delta: 6 })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("h3", { style: { marginBottom: 14 } }, "\u0635\u062D\u0629 \u0627\u0644\u0646\u0640\u0638\u0627\u0645"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 } }, [
-    { l: "\u0632\u0645\u0646 \u0627\u0644\u0627\u0633\u0640\u062A\u062C\u0627\u0628\u0629", v: "124ms", c: "var(--ok-500)" },
-    { l: "\u0627\u0644\u062A\u062E\u0632\u064A\u0640\u0646 \u0627\u0644\u0645\u0633\u0640\u062A\u062E\u062F\u0645", v: "42%", c: "var(--brand-500)" },
-    { l: "\u0627\u0644\u0645\u0633\u0640\u062A\u062E\u062F\u0645\u0648\u0646 \u0627\u0644\u0645\u062A\u0635\u0640\u0644\u0648\u0646", v: "34", c: "var(--purple-500)" },
-    { l: "\u0622\u062E\u0631 \u0646\u0633\u062E \u0627\u062D\u062A\u064A\u0627\u0637\u0640\u064A", v: "\u0642\u0628\u0644 \u0664 \u0633\u0627\u0639\u0627\u062A", c: "var(--warn-500)" }
-  ].map((x, i) => /* @__PURE__ */ React.createElement("div", { key: i, style: { padding: 14, background: "var(--bg-sunken)", borderRadius: 10 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: "var(--text-muted)", marginBottom: 4 } }, x.l), /* @__PURE__ */ React.createElement("div", { className: "num", style: { fontSize: 20, fontWeight: 700, color: x.c } }, x.v))))), /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("h3", { style: { marginBottom: 14 } }, "\u0627\u0644\u0646\u0640\u0634\u0627\u0637 \u0627\u0644\u0623\u062E\u0640\u064A\u0631"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 10 } }, [
-    { t: "\u0625\u0636\u0627\u0641\u0629 \u0645\u0648\u0638\u0641 \u062C\u062F\u064A\u062F", s: "\u0644\u0645\u0649 \u0627\u0644\u0639\u0640\u0646\u0632\u064A \u2014 \u0642\u0633\u0645 \u0627\u0644\u0627\u0633\u062A\u0642\u0640\u0628\u0627\u0644", time: "\u0642\u0628\u0644 \u0662\u0660 \u062F\u0642\u064A\u0640\u0642\u0629" },
-    { t: "\u062A\u0639\u062F\u064A\u0640\u0644 \u0635\u0644\u0627\u062D\u0640\u064A\u0629", s: "\u0641\u0647\u062F \u0627\u0644\u0642\u0631\u0646\u0640\u064A \u2192 \u0645\u0634\u0631\u0641 \u0642\u0633\u0645", time: "\u0642\u0628\u0644 \u0633\u0627\u0639\u0629" },
-    { t: "\u0625\u0636\u0627\u0641\u0629 \u0646\u0648\u0639 \u0634\u0643\u0648\u0649", s: "\xAB\u062A\u062D\u062F\u064A\u0640\u062B \u0627\u0644\u0628\u0640\u064A\u0627\u0646\u0627\u062A\xBB \u0644\u0642\u0633\u0645 \u0627\u0644\u0645\u0639\u0640\u0644\u0648\u0645\u0627\u062A", time: "\u0642\u0628\u0644 \u0663 \u0633\u0627\u0639\u0627\u062A" },
-    { t: "\u062A\u063A\u064A\u0640\u064A\u0631 \u0627\u0633\u0645 \u0645\u0635\u062F\u0631", s: "\xAB\u0627\u0644\u0641\u0631\u0648\u0639 \u0627\u0644\u0645\u064A\u062F\u0627\u0646\u0640\u064A\u0629\xBB \u2192 \xAB\u0627\u0644\u0641\u0631\u0648\u0639\xBB", time: "\u0623\u0645\u0633" }
-  ].map((x, i) => /* @__PURE__ */ React.createElement("div", { key: i, className: "hstack", style: { gap: 10, paddingBottom: 10, borderBottom: i < 3 ? "1px solid var(--border-subtle)" : "none" } }, /* @__PURE__ */ React.createElement("span", { style: { width: 6, height: 6, borderRadius: 999, background: "var(--brand-500)" } }), /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 13, fontWeight: 600 } }, x.t), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: "var(--text-muted)" } }, x.s)), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, color: "var(--text-muted)" } }, x.time)))))), /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("h3", { style: { marginBottom: 14 } }, "\u0645\u0644\u062E\u0635 \u0627\u0644\u0623\u0642\u0640\u0633\u0627\u0645"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 } }, DEPARTMENTS.map((d) => {
-    const stats = BY_DEPT.find((x) => x.id === d.id);
-    return /* @__PURE__ */ React.createElement("div", { key: d.id, style: { padding: 14, border: "1px solid var(--border-subtle)", borderRadius: 10, position: "relative", overflow: "hidden" } }, /* @__PURE__ */ React.createElement("div", { style: { position: "absolute", top: 0, insetInlineStart: 0, width: 4, height: "100%", background: d.color } }), /* @__PURE__ */ React.createElement("div", { style: { paddingInlineStart: 8 } }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 8, marginBottom: 4 } }, /* @__PURE__ */ React.createElement(Icon, { name: d.icon, size: 14, color: d.color }), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: 13 } }, d.ar)), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 10, fontSize: 11, color: "var(--text-muted)" } }, /* @__PURE__ */ React.createElement("span", { className: "num" }, stats.open, " \u0645\u0641\u0640\u062A\u0648\u062D"), /* @__PURE__ */ React.createElement("span", null, "\xB7"), /* @__PURE__ */ React.createElement("span", { className: "num" }, stats.closed, " \u0645\u063A\u0644\u0642"))));
-  }))));
+  const DashL5 = () => {
+    const totalUsers = EMPLOYEES.length;
+    const activeDepts = DEPARTMENTS.length;
+    const totalSources = SOURCES.length;
+    const totalTypes = Object.values(TYPES || {}).reduce((sum, arr) => sum + (arr?.length || 0), 0);
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0625\u062C\u0640\u0645\u0627\u0644\u064A \u0627\u0644\u0645\u0633\u0640\u062A\u062E\u062F\u0645\u0640\u064A\u0646", value: String(totalUsers), icon: "users", tone: "info" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0627\u0644\u0623\u0642\u0640\u0633\u0627\u0645 \u0627\u0644\u0646\u0634\u0640\u0637\u0629", value: String(activeDepts), icon: "building", tone: "purple" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u0635\u0627\u062F\u0631 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A", value: String(totalSources), icon: "tag", tone: "teal" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0623\u0646\u0648\u0627\u0639 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A", value: String(totalTypes), icon: "file", tone: "ok" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("h3", { style: { marginBottom: 14 } }, "\u0635\u062D\u0629 \u0627\u0644\u0646\u0640\u0638\u0627\u0645"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 } }, [
+      { l: "\u0632\u0645\u0646 \u0627\u0644\u0627\u0633\u0640\u062A\u062C\u0627\u0628\u0629", v: "124ms", c: "var(--moss)" },
+      { l: "\u0627\u0644\u062A\u062E\u0632\u064A\u0640\u0646 \u0627\u0644\u0645\u0633\u0640\u062A\u062E\u062F\u0645", v: "42%", c: "var(--petrol)" },
+      { l: "\u0627\u0644\u0645\u0633\u0640\u062A\u062E\u062F\u0645\u0648\u0646 \u0627\u0644\u0645\u062A\u0635\u0640\u0644\u0648\u0646", v: "34", c: "var(--aubergine)" },
+      { l: "\u0622\u062E\u0631 \u0646\u0633\u062E \u0627\u062D\u062A\u064A\u0627\u0637\u0640\u064A", v: "\u0642\u0628\u0644 \u0664 \u0633\u0627\u0639\u0627\u062A", c: "var(--gold)" }
+    ].map((x, i) => /* @__PURE__ */ React.createElement("div", { key: i, style: { padding: 14, background: "var(--paper-warm)", borderRadius: 0, border: "1px solid var(--hair)" } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: "var(--ink-3)", marginBottom: 4 } }, x.l), /* @__PURE__ */ React.createElement("div", { className: "num", style: { fontSize: 20, fontWeight: 700, color: x.c } }, x.v))))), /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("h3", { style: { marginBottom: 14 } }, "\u0627\u0644\u0646\u0640\u0634\u0627\u0637 \u0627\u0644\u0623\u062E\u0640\u064A\u0631"), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 10 } }, [
+      { t: "\u0625\u0636\u0627\u0641\u0629 \u0645\u0648\u0638\u0641 \u062C\u062F\u064A\u062F", s: "\u0644\u0645\u0649 \u0627\u0644\u0639\u0640\u0646\u0632\u064A \u2014 \u0642\u0633\u0645 \u0627\u0644\u0627\u0633\u062A\u0642\u0640\u0628\u0627\u0644", time: "\u0642\u0628\u0644 \u0662\u0660 \u062F\u0642\u064A\u0640\u0642\u0629" },
+      { t: "\u062A\u0639\u062F\u064A\u0640\u0644 \u0635\u0644\u0627\u062D\u0640\u064A\u0629", s: "\u0641\u0647\u062F \u0627\u0644\u0642\u0631\u0646\u0640\u064A \u2192 \u0645\u0634\u0631\u0641 \u0642\u0633\u0645", time: "\u0642\u0628\u0644 \u0633\u0627\u0639\u0629" },
+      { t: "\u0625\u0636\u0627\u0641\u0629 \u0646\u0648\u0639 \u0634\u0643\u0648\u0649", s: "\xAB\u062A\u062D\u062F\u064A\u0640\u062B \u0627\u0644\u0628\u0640\u064A\u0627\u0646\u0627\u062A\xBB \u0644\u0642\u0633\u0645 \u0627\u0644\u0645\u0639\u0640\u0644\u0648\u0645\u0627\u062A", time: "\u0642\u0628\u0644 \u0663 \u0633\u0627\u0639\u0627\u062A" },
+      { t: "\u062A\u063A\u064A\u0640\u064A\u0631 \u0627\u0633\u0645 \u0645\u0635\u062F\u0631", s: "\xAB\u0627\u0644\u0641\u0631\u0648\u0639 \u0627\u0644\u0645\u064A\u062F\u0627\u0646\u0640\u064A\u0629\xBB \u2192 \xAB\u0627\u0644\u0641\u0631\u0648\u0639\xBB", time: "\u0623\u0645\u0633" }
+    ].map((x, i) => /* @__PURE__ */ React.createElement("div", { key: i, className: "hstack", style: { gap: 10, paddingBottom: 10, borderBottom: i < 3 ? "1px solid var(--hair)" : "none" } }, /* @__PURE__ */ React.createElement("span", { style: { width: 6, height: 6, borderRadius: 999, background: "var(--petrol)" } }), /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 13, fontWeight: 600 } }, x.t), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: "var(--ink-3)" } }, x.s)), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, color: "var(--ink-3)" } }, x.time)))))), /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("h3", { style: { marginBottom: 14 } }, "\u0645\u0644\u062E\u0635 \u0627\u0644\u0623\u0642\u0640\u0633\u0627\u0645"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 12 } }, DEPARTMENTS.map((d) => {
+      const stats = BY_DEPT.find((x) => x.id === d.id);
+      return /* @__PURE__ */ React.createElement("div", { key: d.id, style: { padding: 14, border: "1px solid var(--hair-strong)", borderRadius: 0, position: "relative", overflow: "hidden", background: "var(--paper-card)" } }, /* @__PURE__ */ React.createElement("div", { style: { position: "absolute", top: 0, insetInlineStart: 0, width: 4, height: "100%", background: d.color } }), /* @__PURE__ */ React.createElement("div", { style: { paddingInlineStart: 8 } }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 8, marginBottom: 4 } }, /* @__PURE__ */ React.createElement(Icon, { name: d.icon, size: 14, color: d.color }), /* @__PURE__ */ React.createElement("strong", { style: { fontSize: 13 } }, d.ar)), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 10, fontSize: 11, color: "var(--ink-3)" } }, /* @__PURE__ */ React.createElement("span", { className: "num" }, stats.open, " \u0645\u0641\u0640\u062A\u0648\u062D"), /* @__PURE__ */ React.createElement("span", null, "\xB7"), /* @__PURE__ */ React.createElement("span", { className: "num" }, stats.closed, " \u0645\u063A\u0644\u0642"))));
+    }))));
+  };
   const DashCtx = React.createContext({ hidden: /* @__PURE__ */ new Set(), toggleHide: () => {
   }, onDragStart: () => {
   }, onDragOver: () => {
@@ -4261,7 +4312,7 @@ ${bodyHtml}
         style: {
           padding: compact ? 16 : 18,
           position: "relative",
-          border: editMode ? "1px dashed var(--brand-500)" : void 0,
+          border: editMode ? "1px dashed var(--petrol)" : void 0,
           opacity: isHidden ? 0.45 : isDragging ? 0.55 : 1,
           cursor: editMode ? "grab" : "default",
           transition: "opacity .15s, transform .15s",
@@ -4353,10 +4404,11 @@ ${bodyHtml}
       gap: 2,
       fontSize: 9,
       color: "var(--ink-3)",
-      marginBottom: 4,
-      fontFamily: "'JetBrains Mono', monospace",
-      letterSpacing: "0.04em"
-    } }, /* @__PURE__ */ React.createElement("span", null), hours.map((h) => /* @__PURE__ */ React.createElement("span", { key: h, style: { textAlign: "center" }, className: "num" }, h))), days.map((d, di) => /* @__PURE__ */ React.createElement("div", { key: d, style: { display: "grid", gridTemplateColumns: "auto repeat(12, 1fr)", gap: 2, marginBottom: 2 } }, /* @__PURE__ */ React.createElement("span", { style: {
+      marginBottom: 4
+    } }, /* @__PURE__ */ React.createElement("span", null), hours.map((h) => /* @__PURE__ */ React.createElement("span", { key: h, className: "num", style: {
+      textAlign: "center",
+      fontVariantNumeric: "tabular-nums"
+    } }, h))), days.map((d, di) => /* @__PURE__ */ React.createElement("div", { key: d, style: { display: "grid", gridTemplateColumns: "auto repeat(12, 1fr)", gap: 2, marginBottom: 2 } }, /* @__PURE__ */ React.createElement("span", { style: {
       fontSize: 10,
       color: "var(--ink-3)",
       fontWeight: 700,
@@ -4525,7 +4577,7 @@ ${bodyHtml}
       flexWrap: "wrap",
       marginBottom: 24,
       paddingBottom: 16,
-      borderBottom: "2px solid var(--ink)"
+      borderBottom: "2px solid var(--rule-bold)"
     } }, /* @__PURE__ */ React.createElement("div", { style: { flex: 1, minWidth: 0 } }, /* @__PURE__ */ React.createElement("div", { style: {
       fontSize: 10,
       fontWeight: 700,
@@ -4559,7 +4611,7 @@ ${bodyHtml}
           padding: "10px 16px",
           background: "transparent",
           border: "none",
-          borderBottom: filters.status === "all" ? "2px solid var(--ink)" : "2px solid transparent",
+          borderBottom: filters.status === "all" ? "2px solid var(--rule-bold)" : "2px solid transparent",
           marginBottom: -1,
           cursor: "pointer",
           fontFamily: "inherit",
@@ -4585,7 +4637,8 @@ ${bodyHtml}
         fontWeight: 700
       } }, scopedTickets.length)
     ), statusCounts.map((s) => {
-      const tone = s.tone === "info" ? "petrol" : s.tone === "ok" ? "moss" : s.tone === "warn" ? "gold" : s.tone === "danger" ? "vermillion" : "ink-2";
+      const toneMap = { info: "petrol", ok: "moss", warn: "gold", danger: "vermillion", purple: "aubergine", teal: "slate" };
+      const tone = toneMap[s.tone] || "ink-2";
       const isActive = filters.status === s.id;
       return /* @__PURE__ */ React.createElement(
         "button",
@@ -4641,7 +4694,7 @@ ${bodyHtml}
     } }, /* @__PURE__ */ React.createElement(Icon, { name: "tickets", size: 14 })), /* @__PURE__ */ React.createElement("button", { onClick: () => setView("kanban"), style: {
       padding: "8px 12px",
       border: "none",
-      borderInlineStart: "1px solid var(--ink)",
+      borderInlineStart: "1px solid var(--rule)",
       background: view === "kanban" ? "var(--ink)" : "transparent",
       color: view === "kanban" ? "var(--paper)" : "var(--ink-2)",
       cursor: "pointer",
@@ -4657,7 +4710,7 @@ ${bodyHtml}
       textTransform: "uppercase",
       color: "var(--ink-3)",
       background: "var(--paper-warm)",
-      borderBottom: "2px solid var(--ink)",
+      borderBottom: "2px solid var(--rule-bold)",
       whiteSpace: "nowrap"
     } }, h)))), /* @__PURE__ */ React.createElement("tbody", null, filtered.map((t, i) => {
       const src = SOURCES.find((x) => x.id === t.source);
@@ -4730,7 +4783,7 @@ ${bodyHtml}
       alignItems: "center",
       gap: 12,
       padding: "12px 18px",
-      borderTop: "1px solid var(--ink)",
+      borderTop: "1px solid var(--hair-strong)",
       background: "var(--paper-warm)"
     } }, /* @__PURE__ */ React.createElement("span", { style: {
       fontSize: 10,
@@ -4738,14 +4791,15 @@ ${bodyHtml}
       letterSpacing: "0.14em",
       textTransform: "uppercase",
       color: "var(--ink-3)"
-    } }, "\u2014"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, color: "var(--ink-3)", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.04em" } }, "\u0639\u0631\u0636 ", /* @__PURE__ */ React.createElement("span", { className: "num", style: { fontWeight: 700, color: "var(--ink)" } }, "\u0661-", filtered.length), " \u0645\u0646 ", /* @__PURE__ */ React.createElement("span", { className: "num", style: { fontWeight: 700, color: "var(--ink)" } }, scopedTickets.length)))) : /* @__PURE__ */ React.createElement(KanbanView, { tickets: filtered }));
+    } }, "\u2014"), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 12, color: "var(--ink-3)", fontWeight: 500 } }, "\u0639\u0631\u0636 ", /* @__PURE__ */ React.createElement("span", { className: "num", style: { fontWeight: 700, color: "var(--ink)", fontVariantNumeric: "tabular-nums" } }, "\u0661-", filtered.length), " \u0645\u0646 ", /* @__PURE__ */ React.createElement("span", { className: "num", style: { fontWeight: 700, color: "var(--ink)", fontVariantNumeric: "tabular-nums" } }, scopedTickets.length)))) : /* @__PURE__ */ React.createElement(KanbanView, { tickets: filtered }));
   };
   const KanbanView = ({ tickets }) => {
     const { openTicket } = useApp();
     const cols = STATUSES.filter((s) => s.id !== "overdue");
     return /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: `repeat(${cols.length}, minmax(240px, 1fr))`, gap: 14, overflowX: "auto" } }, cols.map((s) => {
       const items = tickets.filter((t) => t.status === s.id);
-      const tone = s.tone === "info" ? "petrol" : s.tone === "ok" ? "moss" : s.tone === "warn" ? "gold" : s.tone === "danger" ? "vermillion" : "ink-3";
+      const toneMap = { info: "petrol", ok: "moss", warn: "gold", danger: "vermillion", purple: "aubergine", teal: "slate" };
+      const tone = toneMap[s.tone] || "ink-3";
       return /* @__PURE__ */ React.createElement("div", { key: s.id, style: {
         background: "var(--paper-warm)",
         border: "1px solid var(--hair-strong)",
@@ -4754,7 +4808,7 @@ ${bodyHtml}
       } }, /* @__PURE__ */ React.createElement("div", { style: {
         padding: "12px 14px",
         background: "var(--paper-card)",
-        borderBottom: "1px solid var(--ink)",
+        borderBottom: "1px solid var(--rule)",
         display: "flex",
         alignItems: "center",
         gap: 10
@@ -5231,16 +5285,6 @@ ${bodyHtml}
       high: { ar: "\u0639\u0627\u0644\u064A\u0629", color: "var(--warn-600)", bg: "var(--warn-100)", icon: "alert" },
       urgent: { ar: "\u0639\u0627\u062C\u0640\u0644\u0629", color: "var(--danger-600)", bg: "var(--danger-100)", icon: "flame" }
     };
-    const deptIconMap = {
-      reception: "inbox",
-      connections: "link",
-      collection: "wallet",
-      billing: "fileText",
-      complaints: "alertCircle",
-      info: "barChart",
-      electronic: "monitor",
-      sustainability: "leaf"
-    };
     return /* @__PURE__ */ React.createElement(
       Modal,
       {
@@ -5268,7 +5312,7 @@ ${bodyHtml}
             style: {
               padding: "10px 10px",
               borderRadius: 0,
-              border: `1px solid ${active ? "var(--ink)" : "var(--hair-strong)"}`,
+              border: `1px solid ${active ? d.color : "var(--hair-strong)"}`,
               background: active ? "var(--paper-warm)" : "var(--paper-card)",
               cursor: "pointer",
               fontFamily: "inherit",
@@ -5278,18 +5322,30 @@ ${bodyHtml}
               gap: 8,
               transition: "all 0.15s ease",
               position: "relative"
+            },
+            onMouseEnter: (e) => {
+              if (!active) {
+                e.currentTarget.style.borderColor = d.color;
+                e.currentTarget.style.background = "var(--paper-warm)";
+              }
+            },
+            onMouseLeave: (e) => {
+              if (!active) {
+                e.currentTarget.style.borderColor = "var(--hair-strong)";
+                e.currentTarget.style.background = "var(--paper-card)";
+              }
             }
           },
           /* @__PURE__ */ React.createElement("div", { style: {
             width: 26,
             height: 26,
             flexShrink: 0,
-            background: active ? "var(--ink)" : "var(--paper-warm)",
-            color: active ? "var(--paper)" : "var(--ink-2)",
+            background: "var(--paper)",
+            color: d.color,
             display: "grid",
             placeItems: "center",
-            border: "1px solid var(--hair-strong)"
-          } }, /* @__PURE__ */ React.createElement(Icon, { name: deptIconMap[d.id] || "folder", size: 13 })),
+            border: `1px solid ${d.color}`
+          } }, /* @__PURE__ */ React.createElement(Icon, { name: d.icon, size: 13 })),
           /* @__PURE__ */ React.createElement("div", { style: {
             fontSize: 12,
             fontWeight: active ? 700 : 500,
@@ -5300,7 +5356,7 @@ ${bodyHtml}
             minWidth: 0,
             flex: 1
           } }, d.ar),
-          active && /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 12, color: "var(--ink)" })
+          active && /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 12, color: d.color })
         );
       }))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "\u0646\u0648\u0639 \u0627\u0644\u0637\u0640\u0644\u0628 ", /* @__PURE__ */ React.createElement("span", { style: { color: "var(--danger-500)" } }, "*")), /* @__PURE__ */ React.createElement("select", { value: form.type, onChange: (e) => setForm({ ...form, type: e.target.value }), disabled: !types.length }, types.length ? types.map((t, i) => /* @__PURE__ */ React.createElement("option", { key: i, value: t }, t)) : /* @__PURE__ */ React.createElement("option", null, "\u0644\u0627 \u064A\u0648\u062C\u062F \u062A\u0635\u0646\u064A\u0640\u0641\u0627\u062A"))), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "\u0645\u0635\u062F\u0631 \u0627\u0644\u0637\u0640\u0644\u0628 ", /* @__PURE__ */ React.createElement("span", { style: { color: "var(--danger-500)" } }, "*")), /* @__PURE__ */ React.createElement("select", { value: form.source, onChange: (e) => setForm({ ...form, source: e.target.value }) }, SOURCES.map((s) => /* @__PURE__ */ React.createElement("option", { key: s.id, value: s.id }, s.ar))))), /* @__PURE__ */ React.createElement("div", { style: { marginTop: 14 } }, /* @__PURE__ */ React.createElement("label", null, "\u0627\u0644\u0623\u0648\u0644\u0648\u064A\u0629"), /* @__PURE__ */ React.createElement("select", { value: form.priority, onChange: (e) => setForm({ ...form, priority: e.target.value }) }, Object.entries(priorityConfig).map(([id, p]) => /* @__PURE__ */ React.createElement("option", { key: id, value: id }, p.ar))))),
       /* @__PURE__ */ React.createElement(FormSection, { icon: "message", title: "\u062A\u0641\u0627\u0635\u0640\u064A\u0644 \u0627\u0644\u0637\u0640\u0644\u0628", sub: "\u0627\u0634\u0631\u062D \u0627\u0644\u0645\u0648\u0636\u0648\u0639 \u0628\u0634\u0643\u0644 \u0648\u0627\u0636\u062D \u0648\u0645\u062E\u062A\u0640\u0635\u0631" }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 12 } }, /* @__PURE__ */ React.createElement("label", null, "\u0645\u0648\u0636\u0648\u0639 \u0627\u0644\u0637\u0640\u0644\u0628 ", /* @__PURE__ */ React.createElement("span", { style: { color: "var(--danger-500)" } }, "*")), /* @__PURE__ */ React.createElement(
@@ -5368,16 +5424,27 @@ ${bodyHtml}
           },
           style: {
             padding: 10,
-            borderRadius: 8,
-            border: `1px solid ${toDept === d.id ? d.color : "var(--border-subtle)"}`,
-            background: toDept === d.id ? d.color + "15" : "var(--bg-card)",
+            borderRadius: 0,
+            border: `1px solid ${toDept === d.id ? d.color : "var(--hair-strong)"}`,
+            background: toDept === d.id ? "var(--paper-warm)" : "var(--paper-card)",
             cursor: "pointer",
             textAlign: "center",
-            fontFamily: "inherit"
+            fontFamily: "inherit",
+            transition: "all 0.15s ease"
+          },
+          onMouseEnter: (e) => {
+            if (toDept !== d.id) {
+              e.currentTarget.style.borderColor = d.color;
+            }
+          },
+          onMouseLeave: (e) => {
+            if (toDept !== d.id) {
+              e.currentTarget.style.borderColor = "var(--hair-strong)";
+            }
           }
         },
         /* @__PURE__ */ React.createElement(Icon, { name: d.icon, size: 16, color: d.color }),
-        /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, marginTop: 4, color: "var(--text-secondary)", fontWeight: 500 } }, d.ar.replace("\u0642\u0633\u0645 ", ""))
+        /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, marginTop: 4, color: toDept === d.id ? "var(--ink)" : "var(--ink-2)", fontWeight: toDept === d.id ? 700 : 500 } }, d.ar.replace("\u0642\u0633\u0645 ", ""))
       )))),
       /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 14 } }, /* @__PURE__ */ React.createElement("label", null, "\u062A\u0639\u064A\u0640\u064A\u0646 \u0645\u0648\u0638\u0641 (\u0627\u062E\u062A\u0640\u064A\u0627\u0631\u064A)"), /* @__PURE__ */ React.createElement("select", { value: toEmployee, onChange: (e) => setToEmployee(e.target.value) }, /* @__PURE__ */ React.createElement("option", { value: "" }, "\u062A\u0648\u062C\u064A\u0640\u0647 \u062A\u0644\u0642\u0627\u0626\u0640\u064A \u0644\u0645\u0640\u0634\u0631\u0641 \u0627\u0644\u0642\u0640\u0633\u0645"), deptEmployees.map((e) => /* @__PURE__ */ React.createElement("option", { key: e.id, value: e.ar }, e.ar, " \u2014 ", e.title)))),
       /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 14 } }, /* @__PURE__ */ React.createElement("label", null, "\u062A\u0639\u0644\u0640\u064A\u0642 / \u0645\u0644\u0627\u062D\u0640\u0638\u0629 \u0645\u0647\u0645\u0629 * ", /* @__PURE__ */ React.createElement("span", { style: { fontSize: 10, color: "var(--text-muted)" } }, "(5 \u0623\u062D\u0631\u0641 \u0639\u0644\u0649 \u0627\u0644\u0623\u0642\u0640\u0644)")), /* @__PURE__ */ React.createElement("textarea", { rows: "3", placeholder: "\u0627\u0643\u062A\u0628 \u062A\u0639\u0644\u064A\u0640\u0642\u0627\u064B \u0645\u062E\u062A\u0640\u0635\u0631\u0627\u064B \u064A\u064F\u0633\u0640\u062C\u064E\u0651\u0644 \u0641\u064A \u0633\u062C\u0644 \u0627\u0644\u0637\u0640\u0644\u0628...", value: note, onChange: (e) => setNote(e.target.value) }), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { marginTop: 8, fontSize: 11, color: "var(--text-muted)" } }, /* @__PURE__ */ React.createElement(Icon, { name: "alert", size: 12 }), " ", /* @__PURE__ */ React.createElement("span", null, "\u0633\u064A\u062A\u0645 \u062D\u0641\u0638 \u0647\u0630\u0627 \u0627\u0644\u062A\u0639\u0640\u0644\u064A\u0642 \u0641\u064A \u0633\u062C\u0644 \u0627\u0644\u0637\u0640\u0644\u0628 \u0643\u0645\u0639\u0640\u0644\u0648\u0645\u0629 \u064A\u0645\u0643\u0646 \u0627\u0644\u0639\u0648\u062F\u0629 \u0625\u0644\u064A\u0640\u0647\u0627"))),
@@ -5440,7 +5507,7 @@ ${bodyHtml}
       flexWrap: "wrap",
       marginBottom: 24,
       paddingBottom: 16,
-      borderBottom: "2px solid var(--ink)"
+      borderBottom: "2px solid var(--rule-bold)"
     } }, /* @__PURE__ */ React.createElement("div", { style: { flex: 1, minWidth: 200 } }, /* @__PURE__ */ React.createElement("div", { style: {
       fontSize: 10,
       fontWeight: 700,
@@ -5455,9 +5522,8 @@ ${bodyHtml}
       display: "flex",
       alignItems: "center",
       gap: 12,
-      fontFamily: "'JetBrains Mono', monospace",
-      letterSpacing: "0.04em"
-    } }, role === "L3" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", null, "\u0645\u0648\u0638\u0640\u0641\u0648 \u0642\u0633\u0645\u0643"), /* @__PURE__ */ React.createElement("span", { style: { width: 12, height: 1, background: "var(--hair-strong)" } })), /* @__PURE__ */ React.createElement("span", { className: "num" }, /* @__PURE__ */ React.createElement("span", { style: { fontWeight: 700, color: "var(--ink)", fontSize: 14 } }, employees.length), " \u0645\u0648\u0638\u0641"), /* @__PURE__ */ React.createElement("span", { style: { width: 12, height: 1, background: "var(--hair-strong)" } }), /* @__PURE__ */ React.createElement("span", { className: "num" }, /* @__PURE__ */ React.createElement("span", { style: { fontWeight: 700, color: "var(--moss)", fontSize: 14 } }, employees.filter((e) => e.active).length), " \u0646\u0634\u0637"))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "center" } }, /* @__PURE__ */ React.createElement("div", { style: { position: "relative" } }, /* @__PURE__ */ React.createElement(Icon, { name: "search", size: 14, style: { position: "absolute", top: "50%", insetInlineStart: 10, transform: "translateY(-50%)", color: "var(--ink-3)" } }), /* @__PURE__ */ React.createElement(
+      fontWeight: 500
+    } }, role === "L3" && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("span", null, "\u0645\u0648\u0638\u0640\u0641\u0648 \u0642\u0633\u0645\u0643"), /* @__PURE__ */ React.createElement("span", { style: { width: 12, height: 1, background: "var(--hair-strong)" } })), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("span", { className: "num", style: { fontWeight: 700, color: "var(--ink)", fontSize: 14, fontVariantNumeric: "tabular-nums" } }, employees.length), " \u0645\u0648\u0638\u0641"), /* @__PURE__ */ React.createElement("span", { style: { width: 12, height: 1, background: "var(--hair-strong)" } }), /* @__PURE__ */ React.createElement("span", null, /* @__PURE__ */ React.createElement("span", { className: "num", style: { fontWeight: 700, color: "var(--moss)", fontSize: 14, fontVariantNumeric: "tabular-nums" } }, employees.filter((e) => e.active).length), " \u0646\u0634\u0637"))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "center" } }, /* @__PURE__ */ React.createElement("div", { style: { position: "relative" } }, /* @__PURE__ */ React.createElement(Icon, { name: "search", size: 14, style: { position: "absolute", top: "50%", insetInlineStart: 10, transform: "translateY(-50%)", color: "var(--ink-3)" } }), /* @__PURE__ */ React.createElement(
       "input",
       {
         placeholder: "\u0628\u062D\u062B...",
@@ -5477,7 +5543,7 @@ ${bodyHtml}
     })), list.length === 0 && /* @__PURE__ */ React.createElement("div", { style: { padding: 50, textAlign: "center", background: "var(--bg-card)", borderRadius: 14, color: "var(--text-muted)" } }, "\u0644\u0627 \u064A\u0648\u062C\u062F \u0645\u0648\u0638\u0640\u0641\u0648\u0646 \u0628\u0645\u0639\u0627\u064A\u0640\u064A\u0631 \u0627\u0644\u0628\u0640\u062D\u062B \u0627\u0644\u062D\u0627\u0644\u064A\u0629"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 } }, list.map((e) => {
       const dept = DEPARTMENTS.find((d) => d.id === e.dept);
       const roleInfo = ROLES.find((r) => r.id === e.role);
-      return /* @__PURE__ */ React.createElement("div", { key: e.empNo, className: "card", style: { padding: 16, position: "relative", opacity: e.active ? 1 : 0.6 } }, /* @__PURE__ */ React.createElement("div", { style: { position: "absolute", top: 0, insetInlineStart: 0, width: "100%", height: 4, background: dept?.color, borderRadius: "var(--r-lg) var(--r-lg) 0 0" } }), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 12, marginBottom: 12 } }, /* @__PURE__ */ React.createElement(Avatar, { name: e.ar, gender: e.gender, size: 52 }), /* @__PURE__ */ React.createElement("div", { style: { minWidth: 0, flex: 1 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 14, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, e.ar), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: "var(--text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }, dir: "ltr" }, e.en), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 6, marginTop: 4, flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("span", { className: "chip", style: { background: roleInfo.color + "22", color: roleInfo.color, fontSize: 10, padding: "1px 7px" } }, roleInfo.ar), !e.active && /* @__PURE__ */ React.createElement("span", { className: "chip neutral", style: { fontSize: 10 } }, "\u0645\u0639\u0637\u0644")))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 6, fontSize: 12, paddingTop: 10, borderTop: "1px solid var(--border-subtle)" } }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 8 } }, /* @__PURE__ */ React.createElement(Icon, { name: "id", size: 12, color: "var(--text-muted)" }), /* @__PURE__ */ React.createElement("span", { className: "num", style: { color: "var(--text-secondary)" } }, e.empNo)), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 8, minWidth: 0 } }, /* @__PURE__ */ React.createElement(Icon, { name: "mail", size: 12, color: "var(--text-muted)", style: { flexShrink: 0 } }), /* @__PURE__ */ React.createElement("span", { dir: "ltr", style: { color: "var(--text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", direction: "ltr", flex: 1 } }, e.email)), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 8 } }, /* @__PURE__ */ React.createElement(DeptDot, { id: e.dept, size: 8 }), /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-secondary)" } }, e.title))), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 6, marginTop: 12, paddingTop: 10, borderTop: "1px solid var(--border-subtle)" } }, /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } }, /* @__PURE__ */ React.createElement("div", { className: "num", style: { fontSize: 16, fontWeight: 700 } }, e.handled), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 10, color: "var(--text-muted)" } }, "\u0637\u0644\u0628 \u0645\u0639\u0627\u0644\u064E\u062C")), /* @__PURE__ */ React.createElement("button", { className: "btn sm ghost", title: "\u062A\u0639\u062F\u064A\u0640\u0644", onClick: () => setEditEmp(e) }, /* @__PURE__ */ React.createElement(Icon, { name: "edit", size: 13 })), /* @__PURE__ */ React.createElement("button", { className: "btn sm ghost", title: e.active ? "\u062A\u0639\u0637\u0640\u064A\u0644" : "\u062A\u0641\u0639\u0640\u064A\u0644", onClick: () => toggleActive(e.empNo) }, /* @__PURE__ */ React.createElement(Icon, { name: e.active ? "lock" : "check", size: 13 }))));
+      return /* @__PURE__ */ React.createElement("div", { key: e.empNo, className: "card", style: { padding: 16, position: "relative", opacity: e.active ? 1 : 0.6 } }, /* @__PURE__ */ React.createElement("div", { style: { position: "absolute", top: 0, insetInlineStart: 0, width: "100%", height: 4, background: dept?.color, borderRadius: "var(--r-lg) var(--r-lg) 0 0" } }), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 12, marginBottom: 12 } }, /* @__PURE__ */ React.createElement(Avatar, { name: e.ar, gender: e.gender, size: 52 }), /* @__PURE__ */ React.createElement("div", { style: { minWidth: 0, flex: 1 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 14, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, e.ar), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: "var(--text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }, dir: "ltr" }, e.en), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 6, marginTop: 4, flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("span", { className: `chip ${roleInfo.tone || "neutral"}`, style: { fontSize: 10, padding: "1px 7px" } }, roleInfo.ar), !e.active && /* @__PURE__ */ React.createElement("span", { className: "chip neutral", style: { fontSize: 10 } }, "\u0645\u0639\u0637\u0644")))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 6, fontSize: 12, paddingTop: 10, borderTop: "1px solid var(--border-subtle)" } }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 8 } }, /* @__PURE__ */ React.createElement(Icon, { name: "id", size: 12, color: "var(--text-muted)" }), /* @__PURE__ */ React.createElement("span", { className: "num", style: { color: "var(--text-secondary)" } }, e.empNo)), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 8, minWidth: 0 } }, /* @__PURE__ */ React.createElement(Icon, { name: "mail", size: 12, color: "var(--text-muted)", style: { flexShrink: 0 } }), /* @__PURE__ */ React.createElement("span", { dir: "ltr", style: { color: "var(--text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", direction: "ltr", flex: 1 } }, e.email)), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 8 } }, /* @__PURE__ */ React.createElement(DeptDot, { id: e.dept, size: 8 }), /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-secondary)" } }, e.title))), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 6, marginTop: 12, paddingTop: 10, borderTop: "1px solid var(--border-subtle)" } }, /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } }, /* @__PURE__ */ React.createElement("div", { className: "num", style: { fontSize: 16, fontWeight: 700 } }, e.handled), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 10, color: "var(--text-muted)" } }, "\u0637\u0644\u0628 \u0645\u0639\u0627\u0644\u064E\u062C")), /* @__PURE__ */ React.createElement("button", { className: "btn sm ghost", title: "\u062A\u0639\u062F\u064A\u0640\u0644", onClick: () => setEditEmp(e) }, /* @__PURE__ */ React.createElement(Icon, { name: "edit", size: 13 })), /* @__PURE__ */ React.createElement("button", { className: "btn sm ghost", title: e.active ? "\u062A\u0639\u0637\u0640\u064A\u0644" : "\u062A\u0641\u0639\u0640\u064A\u0644", onClick: () => toggleActive(e.empNo) }, /* @__PURE__ */ React.createElement(Icon, { name: e.active ? "lock" : "check", size: 13 }))));
     })), /* @__PURE__ */ React.createElement(
       AddEmployeeModal,
       {
@@ -5559,7 +5625,7 @@ ${bodyHtml}
       flexWrap: "wrap",
       marginBottom: 24,
       paddingBottom: 16,
-      borderBottom: "2px solid var(--ink)"
+      borderBottom: "2px solid var(--rule-bold)"
     } }, /* @__PURE__ */ React.createElement("div", { style: { flex: 1, minWidth: 200 } }, /* @__PURE__ */ React.createElement("div", { style: {
       fontSize: 10,
       fontWeight: 700,
@@ -5700,7 +5766,7 @@ ${bodyHtml}
       flexWrap: "wrap",
       marginBottom: 24,
       paddingBottom: 16,
-      borderBottom: "2px solid var(--ink)"
+      borderBottom: "2px solid var(--rule-bold)"
     } }, /* @__PURE__ */ React.createElement("div", { style: { flex: 1, minWidth: 0 } }, /* @__PURE__ */ React.createElement("div", { style: {
       fontSize: 10,
       fontWeight: 700,
@@ -5722,7 +5788,7 @@ ${bodyHtml}
     } }, /* @__PURE__ */ React.createElement("div", { style: {
       padding: "10px 16px",
       background: "var(--paper-warm)",
-      borderBottom: "1px solid var(--ink)",
+      borderBottom: "1px solid var(--rule)",
       fontSize: 9,
       fontWeight: 700,
       letterSpacing: "0.2em",
@@ -5826,7 +5892,7 @@ ${bodyHtml}
     return /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 20 } }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { marginBottom: 18 } }, /* @__PURE__ */ React.createElement("h3", null, "\u0627\u0644\u0623\u0642\u0640\u0633\u0627\u0645 \u0648\u0627\u0644\u0625\u062F\u0627\u0631\u0627\u062A"), /* @__PURE__ */ React.createElement("span", { className: "spacer" }), /* @__PURE__ */ React.createElement("button", { className: "btn primary sm", onClick: openAdd }, /* @__PURE__ */ React.createElement(Icon, { name: "plus", size: 14 }), " \u0625\u0636\u0627\u0641\u0629 \u0642\u0633\u0645")), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 8 } }, depts.map((d) => {
       const count = EMPLOYEES.filter((e) => e.dept === d.id).length;
       const types = TYPES[d.id]?.length || 0;
-      return /* @__PURE__ */ React.createElement("div", { key: d.id, className: "hstack", style: { padding: 14, border: "1px solid var(--border-subtle)", borderRadius: 10, gap: 12, flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("div", { style: { width: 40, height: 40, borderRadius: 10, background: d.color + "22", color: d.color, display: "grid", placeItems: "center", flexShrink: 0 } }, /* @__PURE__ */ React.createElement(Icon, { name: d.icon, size: 18 })), /* @__PURE__ */ React.createElement("div", { style: { flex: 1, minWidth: 180 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 14, fontWeight: 600 } }, d.ar), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: "var(--text-muted)" }, dir: "ltr" }, d.en)), /* @__PURE__ */ React.createElement("span", { className: "chip neutral" }, /* @__PURE__ */ React.createElement("span", { className: "num" }, count), " \u0645\u0648\u0638\u0641"), /* @__PURE__ */ React.createElement("span", { className: "chip info" }, /* @__PURE__ */ React.createElement("span", { className: "num" }, types), " \u0646\u0648\u0639"), /* @__PURE__ */ React.createElement("button", { className: "btn icon ghost", onClick: () => openEdit(d) }, /* @__PURE__ */ React.createElement(Icon, { name: "edit", size: 14 })), /* @__PURE__ */ React.createElement("button", { className: "btn icon ghost", onClick: () => del(d) }, /* @__PURE__ */ React.createElement(Icon, { name: "trash", size: 14, color: "var(--danger-500)" })));
+      return /* @__PURE__ */ React.createElement("div", { key: d.id, className: "hstack", style: { padding: 14, border: "1px solid var(--border-subtle)", borderRadius: 10, gap: 12, flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("div", { style: { width: 40, height: 40, borderRadius: 0, background: "var(--paper-warm)", color: d.color, display: "grid", placeItems: "center", flexShrink: 0, border: `1px solid ${d.color}` } }, /* @__PURE__ */ React.createElement(Icon, { name: d.icon, size: 18 })), /* @__PURE__ */ React.createElement("div", { style: { flex: 1, minWidth: 180 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 14, fontWeight: 600 } }, d.ar), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: "var(--text-muted)" }, dir: "ltr" }, d.en)), /* @__PURE__ */ React.createElement("span", { className: "chip neutral" }, /* @__PURE__ */ React.createElement("span", { className: "num" }, count), " \u0645\u0648\u0638\u0641"), /* @__PURE__ */ React.createElement("span", { className: "chip info" }, /* @__PURE__ */ React.createElement("span", { className: "num" }, types), " \u0646\u0648\u0639"), /* @__PURE__ */ React.createElement("button", { className: "btn icon ghost", onClick: () => openEdit(d) }, /* @__PURE__ */ React.createElement(Icon, { name: "edit", size: 14 })), /* @__PURE__ */ React.createElement("button", { className: "btn icon ghost", onClick: () => del(d) }, /* @__PURE__ */ React.createElement(Icon, { name: "trash", size: 14, color: "var(--danger-500)" })));
     })), addOpen && /* @__PURE__ */ React.createElement("div", { onClick: () => setAddOpen(false), style: { position: "fixed", inset: 0, background: "rgba(0,0,0,.5)", zIndex: 80, display: "grid", placeItems: "center", padding: 20 } }, /* @__PURE__ */ React.createElement("div", { onClick: (e) => e.stopPropagation(), className: "card fade-in", style: { width: "100%", maxWidth: 480, padding: 20 } }, /* @__PURE__ */ React.createElement("h3", { style: { marginBottom: 14 } }, editingId ? "\u062A\u0639\u062F\u064A\u0640\u0644 \u0642\u0633\u0645" : "\u0625\u0636\u0627\u0641\u0629 \u0642\u0633\u0645 \u062C\u062F\u064A\u062F"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gap: 12 } }, /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "\u0627\u0633\u0645 \u0627\u0644\u0642\u0640\u0633\u0645 \u0628\u0627\u0644\u0639\u0631\u0628\u0640\u064A *"), /* @__PURE__ */ React.createElement("input", { value: form.ar, onChange: (e) => setForm({ ...form, ar: e.target.value }), placeholder: "\u0645\u062B\u0627\u0644: \u0642\u0633\u0645 \u0627\u0644\u062E\u062F\u0645\u0627\u062A \u0627\u0644\u0625\u0644\u0643\u0640\u062A\u0631\u0648\u0646\u0640\u064A\u0629" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "\u0627\u0644\u0627\u0633\u0640\u0645 \u0628\u0627\u0644\u0625\u0646\u0640\u062C\u0644\u064A\u0632\u064A"), /* @__PURE__ */ React.createElement("input", { value: form.en, onChange: (e) => setForm({ ...form, en: e.target.value }), placeholder: "E-Services", dir: "ltr" })), /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("label", null, "\u0627\u0644\u0623\u064A\u0640\u0642\u0648\u0646\u0629"), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 6, flexWrap: "wrap" } }, iconOptions.map((ic) => /* @__PURE__ */ React.createElement("button", { key: ic, onClick: () => setForm({ ...form, icon: ic }), style: {
       width: 40,
       height: 40,
@@ -6020,7 +6086,7 @@ ${bodyHtml}
       flexWrap: "wrap",
       marginBottom: 24,
       paddingBottom: 16,
-      borderBottom: "2px solid var(--ink)"
+      borderBottom: "2px solid var(--rule-bold)"
     } }, /* @__PURE__ */ React.createElement("div", { style: { flex: 1, minWidth: 0 } }, /* @__PURE__ */ React.createElement("div", { style: {
       fontSize: 10,
       fontWeight: 700,
@@ -6101,7 +6167,7 @@ ${bodyHtml}
       flexWrap: "wrap",
       marginBottom: 24,
       paddingBottom: 16,
-      borderBottom: "2px solid var(--ink)"
+      borderBottom: "2px solid var(--rule-bold)"
     } }, /* @__PURE__ */ React.createElement("div", { style: { flex: 1, minWidth: 0 } }, /* @__PURE__ */ React.createElement("div", { style: {
       fontSize: 10,
       fontWeight: 700,
@@ -6132,7 +6198,7 @@ ${bodyHtml}
             padding: "10px 16px",
             background: "transparent",
             border: "none",
-            borderBottom: isActive ? "2px solid var(--ink)" : "2px solid transparent",
+            borderBottom: isActive ? "2px solid var(--rule-bold)" : "2px solid transparent",
             marginBottom: -1,
             cursor: "pointer",
             fontFamily: "inherit",
@@ -6157,8 +6223,10 @@ ${bodyHtml}
       fontWeight: 300,
       fontSize: 13
     } }, "\u2014 \u0644\u0627 \u062A\u0648\u062C\u062F \u0625\u0634\u0640\u0639\u0627\u0631\u0627\u062A \u2014") : list.map((n, i) => {
-      const accent = n.tone === "danger" ? "vermillion" : n.tone === "ok" ? "moss" : n.tone === "warn" ? "gold" : "petrol";
-      const tagText = n.tone === "danger" ? "ALERT" : n.tone === "ok" ? "OK" : n.tone === "warn" ? "WARN" : "INFO";
+      const accentMap = { danger: "vermillion", ok: "moss", warn: "gold", info: "petrol", purple: "aubergine", teal: "slate" };
+      const tintMap = { vermillion: "vermillion-tint", moss: "moss-tint", gold: "gold-tint", petrol: "petrol-tint", aubergine: "aubergine-tint", slate: "slate-tint" };
+      const accent = accentMap[n.tone] || "petrol";
+      const tagText = n.tone === "danger" ? "ALERT" : n.tone === "ok" ? "OK" : n.tone === "warn" ? "WARN" : n.tone === "purple" ? "NEW" : n.tone === "teal" ? "PEND" : "INFO";
       return /* @__PURE__ */ React.createElement(
         "div",
         {
@@ -6175,14 +6243,13 @@ ${bodyHtml}
             cursor: "pointer",
             transition: "background 0.12s ease"
           },
-          onMouseEnter: (e) => e.currentTarget.style.background = `var(--${accent === "petrol" ? "petrol-tint" : accent === "moss" ? "moss-tint" : accent === "gold" ? "gold-tint" : "vermillion-tint"})`,
+          onMouseEnter: (e) => e.currentTarget.style.background = `var(--${tintMap[accent] || "petrol-tint"})`,
           onMouseLeave: (e) => e.currentTarget.style.background = n.unread ? "var(--paper-warm)" : "transparent"
         },
         /* @__PURE__ */ React.createElement("div", { style: {
-          fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 9,
+          fontSize: 10,
           fontWeight: 700,
-          letterSpacing: "0.18em",
+          letterSpacing: "0.06em",
           color: `var(--${accent})`,
           paddingTop: 4,
           minWidth: 64
@@ -6203,14 +6270,12 @@ ${bodyHtml}
           letterSpacing: "-0.01em",
           fontWeight: 700
         } }, n.title), n.unread && /* @__PURE__ */ React.createElement("span", { style: {
-          fontFamily: "'JetBrains Mono', monospace",
-          fontSize: 9,
+          fontSize: 10,
           fontWeight: 700,
-          letterSpacing: "0.12em",
           background: `var(--${accent})`,
-          color: "var(--paper)",
-          padding: "2px 6px"
-        } }, "\u062C\u062F\u064A\u0640\u062F"), n.ticketId && /* @__PURE__ */ React.createElement("span", { style: {
+          color: "var(--paper-card)",
+          padding: "2px 7px"
+        } }, "\u062C\u062F\u064A\u0640\u062F"), n.ticketId && /* @__PURE__ */ React.createElement("span", { className: "num", style: {
           fontFamily: "'JetBrains Mono', monospace",
           fontSize: 10,
           color: "var(--petrol)",
@@ -6218,10 +6283,10 @@ ${bodyHtml}
           border: "1px solid var(--petrol)",
           padding: "1px 6px"
         } }, n.ticketId), /* @__PURE__ */ React.createElement("span", { style: { flex: 1 } }), /* @__PURE__ */ React.createElement("span", { style: {
-          fontSize: 10,
+          fontSize: 11,
           color: "var(--ink-3)",
-          fontFamily: "'JetBrains Mono', monospace",
-          letterSpacing: "0.04em"
+          fontWeight: 500,
+          fontVariantNumeric: "tabular-nums"
         } }, n.time)), /* @__PURE__ */ React.createElement("p", { style: {
           margin: 0,
           fontSize: 13,
