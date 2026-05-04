@@ -792,11 +792,709 @@ input, textarea, select {
 
 /* FAB stays static — no breathing animation (keep it predictable) */
 
+/* ============================================================ */
+/* ============ EXTENDED ANIMATION SYSTEM v2 ================== */
+/* ============ "Living interface" — depth and breath ========== */
+/* ============================================================ */
+
+/* Easing extensions — natural motion curves */
+:root {
+  --ease-snap:    cubic-bezier(0.4, 0, 0.2, 1);       /* material standard */
+  --ease-smooth:  cubic-bezier(0.16, 1, 0.3, 1);      /* gentle decel */
+  --ease-out-expo:cubic-bezier(0.19, 1, 0.22, 1);     /* dramatic decel */
+  --ease-out-back:cubic-bezier(0.34, 1.56, 0.64, 1);  /* mild overshoot */
+  --ease-bounce:  cubic-bezier(0.68, -0.6, 0.32, 1.6);/* playful overshoot */
+  --ease-flow:    cubic-bezier(0.4, 0, 0.6, 1);       /* slow ambient */
+  --dur-instant:  120ms;
+  --dur-deliberate: 700ms;
+  --dur-flow:     1400ms;
+}
+
+/* ===== Mount-time entry animations — DRAMATIC and visible ===== */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeDown {
+  from { opacity: 0; transform: translateY(-40px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes fadeInLeft {
+  from { opacity: 0; transform: translateX(-50px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes fadeInRight {
+  from { opacity: 0; transform: translateX(50px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.82); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes scaleInBounce {
+  0%   { opacity: 0; transform: scale(0.4) rotate(-3deg); }
+  60%  { opacity: 1; transform: scale(1.06) rotate(0deg); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Generous durations + dramatic ease — readable motion */
+.anim-fade-up      { animation: fadeUp 800ms var(--ease-out-expo) backwards; }
+.anim-fade-down    { animation: fadeDown 800ms var(--ease-out-expo) backwards; }
+.anim-fade-left    { animation: fadeInLeft 800ms var(--ease-out-expo) backwards; }
+.anim-fade-right   { animation: fadeInRight 800ms var(--ease-out-expo) backwards; }
+.anim-scale-in     { animation: scaleIn 700ms var(--ease-out-back) backwards; }
+.anim-bounce-in    { animation: scaleInBounce 800ms var(--ease-out-back) backwards; }
+
+/* Stagger up to 24 children — wider gaps for noticeable cascade */
+.stagger > *:nth-child(1)  { animation-delay: 60ms; }
+.stagger > *:nth-child(2)  { animation-delay: 140ms; }
+.stagger > *:nth-child(3)  { animation-delay: 220ms; }
+.stagger > *:nth-child(4)  { animation-delay: 300ms; }
+.stagger > *:nth-child(5)  { animation-delay: 380ms; }
+.stagger > *:nth-child(6)  { animation-delay: 460ms; }
+.stagger > *:nth-child(7)  { animation-delay: 540ms; }
+.stagger > *:nth-child(8)  { animation-delay: 620ms; }
+.stagger > *:nth-child(9)  { animation-delay: 700ms; }
+.stagger > *:nth-child(10) { animation-delay: 780ms; }
+.stagger > *:nth-child(11) { animation-delay: 860ms; }
+.stagger > *:nth-child(12) { animation-delay: 940ms; }
+.stagger > *:nth-child(13) { animation-delay: 1020ms; }
+.stagger > *:nth-child(14) { animation-delay: 1100ms; }
+.stagger > *:nth-child(15) { animation-delay: 1180ms; }
+.stagger > *:nth-child(16) { animation-delay: 1260ms; }
+.stagger > *:nth-child(17) { animation-delay: 1340ms; }
+.stagger > *:nth-child(18) { animation-delay: 1420ms; }
+.stagger > *:nth-child(19) { animation-delay: 1500ms; }
+.stagger > *:nth-child(20) { animation-delay: 1580ms; }
+.stagger > *:nth-child(21) { animation-delay: 1660ms; }
+.stagger > *:nth-child(22) { animation-delay: 1740ms; }
+.stagger > *:nth-child(23) { animation-delay: 1820ms; }
+.stagger > *:nth-child(24) { animation-delay: 1900ms; }
+
+/* Apply default fade-up to staggered children when class .stagger-up is used */
+.stagger-up > * { animation: fadeUp 800ms var(--ease-out-expo) backwards; }
+
+/* ===== Ambient / breathing animations ===== */
+@keyframes breathe {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50%      { transform: scale(1.025); opacity: 0.95; }
+}
+@keyframes pulseSoft {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.55; }
+}
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(197,69,59, 0.45); }
+  50%      { box-shadow: 0 0 0 7px rgba(197,69,59, 0); }
+}
+@keyframes pulseRing {
+  0%   { box-shadow: 0 0 0 0 var(--ring-color, rgba(23,115,179,0.5)); }
+  70%  { box-shadow: 0 0 0 9px transparent; }
+  100% { box-shadow: 0 0 0 0 transparent; }
+}
+
+.anim-breathe      { animation: breathe 4s var(--ease-flow) infinite; }
+.anim-pulse-soft   { animation: pulseSoft 2.4s var(--ease-flow) infinite; }
+.anim-pulse-glow   { animation: pulseGlow 2s var(--ease-flow) infinite; }
+.anim-pulse-ring   { animation: pulseRing 2s var(--ease-flow) infinite; }
+
+/* Live indicator — VERY visible breathing dot */
+.live-dot {
+  position: relative; width: 10px; height: 10px; border-radius: 999px;
+  background: var(--moss); display: inline-block;
+  box-shadow: 0 0 0 0 var(--moss);
+  animation: liveDotPulse 1.8s var(--ease-flow) infinite;
+}
+@keyframes liveDotPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(27, 139, 114, 0.7); transform: scale(1); }
+  50%  { box-shadow: 0 0 0 9px rgba(27, 139, 114, 0); transform: scale(1.15); }
+  100% { box-shadow: 0 0 0 0 rgba(27, 139, 114, 0); transform: scale(1); }
+}
+.live-dot::after {
+  content: ''; position: absolute; inset: -3px;
+  border-radius: 999px; background: var(--moss);
+  opacity: 0.25; animation: pulseSoft 1.6s var(--ease-flow) infinite;
+}
+
+/* ===== Number ticker — for KPI count changes ===== */
+@keyframes tickUp {
+  from { transform: translateY(8px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+.anim-tick { animation: tickUp var(--dur-base) var(--ease-out-expo) both; }
+
+/* ===== Shake — for errors / wrong input ===== */
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-5px); }
+  40%, 80% { transform: translateX(5px); }
+}
+.anim-shake { animation: shake 0.42s var(--ease-snap); }
+
+/* ===== Shimmer — loading skeletons + premium accents ===== */
+@keyframes shimmerSweep {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer {
+  background: linear-gradient(
+    100deg,
+    transparent 30%,
+    rgba(255,255,255,0.32) 50%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: shimmerSweep 1.6s var(--ease-flow) infinite;
+}
+
+/* ===== Badge pop — for new notification count ===== */
+@keyframes badgePop {
+  0%   { transform: scale(0.4); opacity: 0; }
+  60%  { transform: scale(1.18); opacity: 1; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.anim-badge-pop { animation: badgePop 380ms var(--ease-out-back) both; }
+
+/* ===== Notification icon shake — when new notif arrives ===== */
+@keyframes bellShake {
+  0%, 100%      { transform: rotate(0); }
+  10%, 30%, 50% { transform: rotate(-12deg); }
+  20%, 40%, 60% { transform: rotate(12deg); }
+  70%           { transform: rotate(-6deg); }
+  80%           { transform: rotate(6deg); }
+  90%           { transform: rotate(0); }
+}
+.anim-bell-shake { animation: bellShake 0.9s var(--ease-snap); transform-origin: top center; }
+
+/* ===== Page transition — content slide-in from inline-end ===== */
+@keyframes pageSlideIn {
+  from { opacity: 0; transform: translateX(20px); }
+  to   { opacity: 1; transform: translateX(0); }
+}
+[data-screen] { animation: pageSlideIn var(--dur-slow) var(--ease-out-expo) both; }
+
+/* ===== Card hover lift v2 — deeper, with glow ===== */
+.card.lift {
+  transition:
+    transform var(--dur-base) var(--ease-out-expo),
+    box-shadow var(--dur-base) var(--ease-out-expo),
+    border-color var(--dur-base) ease;
+  cursor: pointer;
+}
+.card.lift:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 1px 0 var(--hair-strong),
+    0 12px 24px -8px rgba(17, 68, 140, 0.18);
+  border-color: var(--petrol);
+}
+html[data-theme="dark"] .card.lift:hover {
+  box-shadow:
+    0 1px 0 var(--hair-strong),
+    0 12px 24px -8px rgba(14, 14, 14, 0.18);
+  border-color: var(--ink);
+}
+
+/* ===== Button enhanced — pressable, ripple-ish ===== */
+.btn { position: relative; overflow: hidden; }
+.btn.primary {
+  transition:
+    transform var(--dur-fast) var(--ease-out-back),
+    background var(--dur-fast) ease,
+    box-shadow var(--dur-fast) ease;
+}
+.btn.primary:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 -1px var(--petrol-deep);
+}
+.btn.primary:active {
+  transform: translateY(1px);
+  box-shadow: 0 0 0 0 var(--petrol-deep);
+}
+
+/* ===== Avatar hover — soft ring pulse ===== */
+.avatar {
+  transition: transform var(--dur-fast) var(--ease-out-back), box-shadow var(--dur-fast) ease;
+}
+.avatar:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 0 3px var(--petrol-tint);
+}
+
+/* ===== Sidebar nav item — sliding active indicator ===== */
+.sidebar-item {
+  position: relative;
+  transition: background var(--dur-fast) ease, color var(--dur-fast) ease, padding var(--dur-fast) ease;
+}
+.sidebar-item::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0; top: 8px; bottom: 8px;
+  width: 3px; background: var(--petrol);
+  transform: scaleY(0);
+  transition: transform var(--dur-base) var(--ease-out-expo);
+  transform-origin: center;
+}
+.sidebar-item.active::before { transform: scaleY(1); }
+.sidebar-item:hover:not(.active) {
+  background: var(--paper-warm);
+  padding-inline-start: calc(var(--side-pad, 18px) + 4px);
+}
+
+/* ===== Status chip — ambient pulse for overdue ===== */
+.chip.danger.pulse {
+  animation: pulseGlow 2s var(--ease-flow) infinite;
+}
+
+/* ===== Tab underline — slides between tabs ===== */
+.tab-strip {
+  position: relative;
+}
+.tab-strip [data-tab] {
+  transition: color var(--dur-fast) ease;
+}
+
+/* ===== Form field focus ring — animated ===== */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--petrol);
+  box-shadow: 0 0 0 3px var(--petrol-tint);
+  transition:
+    border-color var(--dur-fast) ease,
+    box-shadow var(--dur-fast) var(--ease-out-back);
+}
+
+/* ===== Modal — backdrop blur smooth ===== */
+@keyframes backdropBlur {
+  from { backdrop-filter: blur(0); opacity: 0; }
+  to   { backdrop-filter: blur(8px); opacity: 1; }
+}
+.modal-backdrop, [data-backdrop] {
+  animation: backdropBlur var(--dur-base) var(--ease-out-expo) both;
+}
+
+/* ===== Donut center — gentle scale on render ===== */
+@keyframes donutCenterIn {
+  from { opacity: 0; transform: scale(0.7); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.donut-center { animation: donutCenterIn var(--dur-slow) var(--ease-out-back) 700ms backwards; }
+
+/* ===== Heatmap cells — wave fade-in ===== */
+@keyframes heatCellIn {
+  from { opacity: 0; transform: scale(0.6); }
+  to   { opacity: 1; transform: scale(1); }
+}
+.heat-cell {
+  animation: heatCellIn var(--dur-base) var(--ease-out-expo) backwards;
+  animation-delay: calc(var(--heat-i, 0) * 8ms + 200ms);
+}
+
+/* ===== Spinner — for async ===== */
+@keyframes spinnerSpin { to { transform: rotate(360deg); } }
+.spinner {
+  width: 16px; height: 16px;
+  border: 2px solid var(--hair-strong);
+  border-top-color: var(--petrol);
+  border-radius: 999px;
+  animation: spinnerSpin 700ms linear infinite;
+  display: inline-block;
+}
+
+/* ===== Loading dots ===== */
+@keyframes dotBounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40%           { transform: translateY(-4px); opacity: 1; }
+}
+.loading-dots span {
+  display: inline-block; width: 5px; height: 5px;
+  border-radius: 999px; background: var(--petrol);
+  margin: 0 2px; animation: dotBounce 1.2s var(--ease-flow) infinite;
+}
+.loading-dots span:nth-child(2) { animation-delay: 160ms; }
+.loading-dots span:nth-child(3) { animation-delay: 320ms; }
+
+/* ===== Toggle — smooth slide ===== */
+.toggle-knob { transition: inset-inline-start var(--dur-base) var(--ease-out-back); }
+
+/* ===== Number scrolling ticker (for live counts) ===== */
+@keyframes flickerOnce {
+  0%   { opacity: 0.3; }
+  50%  { opacity: 1; }
+  100% { opacity: 1; }
+}
+.num.live-update { animation: flickerOnce var(--dur-base) ease-out; }
+
+/* ===== Critical alerts — red glow attention ===== */
+.alert-pulse {
+  position: relative;
+}
+.alert-pulse::after {
+  content: '';
+  position: absolute; inset: -2px; pointer-events: none;
+  border: 1px solid var(--vermillion);
+  animation: pulseGlow 2.4s var(--ease-flow) infinite;
+}
+
+/* ===== Table row reveal ===== */
+.card table tbody tr.reveal {
+  animation: fadeUp var(--dur-slow) var(--ease-out-expo) backwards;
+}
+.card table tbody tr.reveal:nth-child(1)  { animation-delay: 30ms; }
+.card table tbody tr.reveal:nth-child(2)  { animation-delay: 60ms; }
+.card table tbody tr.reveal:nth-child(3)  { animation-delay: 90ms; }
+.card table tbody tr.reveal:nth-child(4)  { animation-delay: 120ms; }
+.card table tbody tr.reveal:nth-child(5)  { animation-delay: 150ms; }
+.card table tbody tr.reveal:nth-child(6)  { animation-delay: 180ms; }
+.card table tbody tr.reveal:nth-child(7)  { animation-delay: 210ms; }
+.card table tbody tr.reveal:nth-child(8)  { animation-delay: 240ms; }
+.card table tbody tr.reveal:nth-child(9)  { animation-delay: 270ms; }
+.card table tbody tr.reveal:nth-child(10) { animation-delay: 300ms; }
+
+/* Table row hover — gentle accent slide in */
+.card table tbody tr {
+  position: relative;
+}
+.card table tbody tr::before {
+  content: '';
+  position: absolute; inset-inline-start: 0; top: 0; bottom: 0;
+  width: 3px; background: var(--petrol);
+  transform: scaleY(0);
+  transition: transform var(--dur-fast) var(--ease-out-expo);
+  transform-origin: center;
+}
+.card table tbody tr:hover::before { transform: scaleY(1); }
+
+/* ===== Status update buttons — ripple-ish ripple on click ===== */
+@keyframes ripple {
+  from { transform: scale(0); opacity: 0.6; }
+  to   { transform: scale(2.5); opacity: 0; }
+}
+.has-ripple { position: relative; overflow: hidden; }
+.has-ripple::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 50%;
+  width: 40px; height: 40px;
+  margin: -20px 0 0 -20px;
+  border-radius: 999px;
+  background: currentColor;
+  opacity: 0;
+  pointer-events: none;
+}
+.has-ripple:active::after {
+  animation: ripple 600ms var(--ease-out-expo);
+}
+
+/* ===== Scroll reveal — items animate in as they enter viewport ===== */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition:
+    opacity 800ms var(--ease-out-expo),
+    transform 800ms var(--ease-out-expo);
+}
+.reveal-on-scroll.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== AMBIENT FLOATATION — pages feel alive & continuously moving ===== */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50%      { transform: translateY(-3px) rotate(0.3deg); }
+}
+.float-soft { animation: float 6s var(--ease-flow) infinite; }
+
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow:
+      inset 0 0 0 1px var(--hair-strong),
+      0 0 0 0 rgba(23, 115, 179, 0);
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0 1px var(--petrol),
+      0 0 16px 0 rgba(23, 115, 179, 0.18);
+  }
+}
+.glow-pulse { animation: glowPulse 3s var(--ease-flow) infinite; }
+
+/* Brand bar shimmer — subtle continuous sweep */
+@keyframes brandSweep {
+  0%   { background-position: -150% 0; }
+  100% { background-position: 250% 0; }
+}
+.brand-sweep {
+  position: relative;
+  overflow: hidden;
+}
+.brand-sweep::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 30%,
+    rgba(23, 115, 179, 0.10) 48%,
+    rgba(23, 115, 179, 0.18) 50%,
+    rgba(23, 115, 179, 0.10) 52%,
+    transparent 70%
+  );
+  background-size: 200% 100%;
+  animation: brandSweep 4s var(--ease-flow) infinite;
+  pointer-events: none;
+}
+
+/* ===== KPI cards — DRAMATIC hover lift ===== */
+.kpi-card {
+  position: relative;
+  overflow: hidden;
+}
+.kpi-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    transparent 0%,
+    transparent 35%,
+    rgba(255,255,255,0.08) 50%,
+    transparent 65%,
+    transparent 100%
+  );
+  transform: translateX(-100%);
+  transition: transform 800ms var(--ease-out-expo);
+  pointer-events: none;
+}
+.kpi-card:hover::before {
+  transform: translateX(100%);
+}
+
+/* Ticker for live count update */
+@keyframes numberRoll {
+  0%   { transform: translateY(0); opacity: 1; }
+  45%  { transform: translateY(-100%); opacity: 0; }
+  55%  { transform: translateY(100%); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+.num-rolling { animation: numberRoll 600ms var(--ease-out-back); display: inline-block; }
+
+/* ===== Page transitions — re-runs on every navigation ===== */
+@keyframes pageEnterRich {
+  0%   { opacity: 0; transform: translateX(40px) scale(0.98); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+[data-screen] { animation: pageEnterRich 600ms var(--ease-out-expo) both !important; }
+
+/* Page direction switch (Arabic RTL flips it naturally) */
+html[dir="rtl"] [data-screen] {
+  animation-name: pageEnterRichRtl !important;
+}
+@keyframes pageEnterRichRtl {
+  0%   { opacity: 0; transform: translateX(-40px) scale(0.98); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+/* ===== Cards lift more dramatically ===== */
+.card.lift {
+  transition:
+    transform 420ms var(--ease-out-back),
+    box-shadow 420ms var(--ease-out-expo),
+    border-color 320ms ease;
+  cursor: pointer;
+  will-change: transform;
+}
+.card.lift:hover {
+  transform: translateY(-6px) scale(1.012);
+  box-shadow:
+    0 1px 0 var(--hair-strong),
+    0 24px 48px -16px rgba(17, 68, 140, 0.28);
+  border-color: var(--petrol);
+}
+html[data-theme="dark"] .card.lift:hover {
+  box-shadow:
+    0 1px 0 var(--hair-strong),
+    0 24px 48px -16px rgba(14, 14, 14, 0.32);
+  border-color: var(--ink);
+}
+
+/* ===== Button enhanced — visible press feedback ===== */
+.btn {
+  transition:
+    transform 240ms var(--ease-out-back),
+    background 200ms ease,
+    color 200ms ease,
+    box-shadow 240ms var(--ease-out-expo) !important;
+}
+.btn:hover {
+  transform: translateY(-2px) !important;
+}
+.btn:active {
+  transform: translateY(1px) scale(0.98) !important;
+  transition-duration: 80ms !important;
+}
+.btn.primary:hover {
+  box-shadow: 0 6px 14px -4px rgba(17, 68, 140, 0.45);
+}
+
+/* ===== Status chips — gentle ambient pulse on key states ===== */
+@keyframes chipBreathe {
+  0%, 100% { transform: scale(1); filter: brightness(1); }
+  50%      { transform: scale(1.04); filter: brightness(1.08); }
+}
+.chip.danger.pulse {
+  animation: chipBreathe 2s var(--ease-flow) infinite, pulseGlow 2s var(--ease-flow) infinite;
+}
+
+/* ===== Sidebar items — slide indicator with bigger displacement ===== */
+.nav-item {
+  position: relative;
+  overflow: hidden;
+}
+.nav-item::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: 0; bottom: 0; width: 0;
+  background: var(--petrol-tint);
+  transition: width 420ms var(--ease-out-expo);
+  pointer-events: none;
+  z-index: -1;
+}
+.nav-item:hover::after { width: 100%; }
+
+/* ===== Avatar — visible hover scale ===== */
+.avatar {
+  transition: transform 320ms var(--ease-out-back), box-shadow 320ms ease;
+  will-change: transform;
+}
+.avatar:hover {
+  transform: scale(1.12);
+  box-shadow: 0 0 0 4px var(--petrol-tint);
+}
+
+/* ===== Form inputs — visible focus ring ===== */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--petrol) !important;
+  box-shadow: 0 0 0 4px var(--petrol-tint) !important;
+  transform: translateY(-1px);
+  transition:
+    border-color 200ms ease,
+    box-shadow 240ms var(--ease-out-back),
+    transform 240ms var(--ease-out-back);
+}
+
+/* ===== Table rows — visible accent strip on hover ===== */
+.card table tbody tr {
+  position: relative;
+  transition: background 240ms ease, transform 240ms var(--ease-out-back);
+}
+.card table tbody tr::before {
+  content: '';
+  position: absolute; inset-inline-start: 0; top: 0; bottom: 0;
+  width: 4px; background: var(--petrol);
+  transform: scaleY(0);
+  transition: transform 320ms var(--ease-out-expo);
+  transform-origin: center;
+  z-index: 1;
+}
+.card table tbody tr:hover {
+  transform: translateX(-3px);
+}
+.card table tbody tr:hover::before { transform: scaleY(1); }
+html[dir="rtl"] .card table tbody tr:hover {
+  transform: translateX(3px);
+}
+
+/* ===== Status filter tabs — bigger underline that bounces in ===== */
+@keyframes tabUnderline {
+  0%   { transform: scaleX(0) translateY(2px); opacity: 0; }
+  100% { transform: scaleX(1) translateY(0); opacity: 1; }
+}
+
+/* ===== Modal scale + slide entry ===== */
+.modal-content {
+  animation: modalDramaticEnter 480ms var(--ease-out-back) both;
+}
+@keyframes modalDramaticEnter {
+  0%   { opacity: 0; transform: translateY(40px) scale(0.92); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* ===== Toast — bigger slide ===== */
+@keyframes toastBigIn {
+  0%   { opacity: 0; transform: translateX(-32px) scale(0.92); }
+  100% { opacity: 1; transform: translateX(0) scale(1); }
+}
+[data-toast], .toast { animation: toastBigIn 480ms var(--ease-out-back) both; }
+
+/* ===== Number ticker — count-up with slight scale pop ===== */
+@keyframes numTick {
+  0%   { transform: translateY(8px) scale(0.85); opacity: 0; }
+  60%  { transform: translateY(0) scale(1.08); opacity: 1; }
+  100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+.num-tick { animation: numTick 480ms var(--ease-out-back) backwards; display: inline-block; }
+
+/* ===== Reveal-on-scroll — bigger displacement ===== */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(50px);
+  transition:
+    opacity 900ms var(--ease-out-expo),
+    transform 900ms var(--ease-out-expo);
+}
+.reveal-on-scroll.in-view {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ===== Loading shimmer for chart areas ===== */
+@keyframes chartShimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.chart-loading {
+  background: linear-gradient(
+    90deg,
+    var(--paper-warm) 25%,
+    var(--paper-card) 50%,
+    var(--paper-warm) 75%
+  );
+  background-size: 200% 100%;
+  animation: chartShimmer 1.6s var(--ease-flow) infinite;
+}
+
+/* ===== Brand logo — subtle continuous breathe ===== */
+@keyframes logoBreathe {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 0 transparent); }
+  50%      { transform: scale(1.025); filter: drop-shadow(0 4px 8px rgba(23, 115, 179, 0.18)); }
+}
+.logo-breathe { animation: logoBreathe 4s var(--ease-flow) infinite; transform-origin: center; }
+
+/* ===== Background ambient gradient shift ===== */
+@keyframes bgShift {
+  0%, 100% { background-position: 0% 50%; }
+  50%      { background-position: 100% 50%; }
+}
+
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+  .live-dot::after,
+  .anim-pulse-soft,
+  .anim-pulse-glow,
+  .anim-pulse-ring,
+  .anim-breathe,
+  .alert-pulse::after,
+  .chip.danger.pulse {
+    animation: none !important;
   }
 }
 
@@ -2073,7 +2771,8 @@ window.NwcFullLogo = NwcFullLogo;
   const { useState, useEffect, useMemo, useRef, useContext, useCallback } = React;
   const StatusChip = ({ status, lang = "ar" }) => {
     const s = STATUSES.find((x) => x.id === status) || STATUSES[0];
-    return /* @__PURE__ */ React.createElement("span", { className: `chip ${s.tone}` }, s[lang]);
+    const cls = `chip ${s.tone}${s.id === "overdue" ? " pulse" : ""}`;
+    return /* @__PURE__ */ React.createElement("span", { className: cls }, s[lang]);
   };
   const PriorityChip = ({ priority, lang = "ar" }) => {
     const p = PRIORITIES.find((x) => x.id === priority) || PRIORITIES[1];
@@ -2180,6 +2879,7 @@ window.NwcFullLogo = NwcFullLogo;
     return /* @__PURE__ */ React.createElement(
       "div",
       {
+        className: "kpi-card",
         style: {
           background: "var(--paper-card)",
           border: "1px solid var(--hair-strong)",
@@ -2188,14 +2888,16 @@ window.NwcFullLogo = NwcFullLogo;
           display: "flex",
           flexDirection: "column",
           position: "relative",
-          transition: "background 0.2s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease"
+          transition: "transform 320ms cubic-bezier(0.16, 1, 0.3, 1), border-color 200ms ease, box-shadow 320ms cubic-bezier(0.16, 1, 0.3, 1)"
         },
         onMouseEnter: (e) => {
-          e.currentTarget.style.transform = "translateY(-2px)";
-          e.currentTarget.style.boxShadow = "4px 4px 0 var(--paper-warm)";
+          e.currentTarget.style.transform = "translateY(-4px)";
+          e.currentTarget.style.borderColor = `var(--${accent})`;
+          e.currentTarget.style.boxShadow = `0 1px 0 var(--hair-strong), 0 16px 32px -10px rgba(17, 68, 140, 0.18)`;
         },
         onMouseLeave: (e) => {
           e.currentTarget.style.transform = "translateY(0)";
+          e.currentTarget.style.borderColor = "var(--hair-strong)";
           e.currentTarget.style.boxShadow = "none";
         }
       },
@@ -2266,7 +2968,32 @@ window.NwcFullLogo = NwcFullLogo;
       return `${x},${y}`;
     }).join(" ");
     const area = `0,${h} ${pts} ${w},${h}`;
-    return /* @__PURE__ */ React.createElement("svg", { width: w, height: h, style: { overflow: "visible" } }, /* @__PURE__ */ React.createElement("polygon", { points: area, fill: color, opacity: ".1" }), /* @__PURE__ */ React.createElement("polyline", { points: pts, fill: "none", stroke: color, strokeWidth: "1.8", strokeLinecap: "round", strokeLinejoin: "round" }));
+    const len = w * 1.4;
+    return /* @__PURE__ */ React.createElement("svg", { width: w, height: h, style: { overflow: "visible" } }, /* @__PURE__ */ React.createElement(
+      "polygon",
+      {
+        points: area,
+        fill: color,
+        opacity: ".1",
+        style: { animation: "fadeUp var(--dur-slow) var(--ease-out-expo) 200ms backwards" }
+      }
+    ), /* @__PURE__ */ React.createElement(
+      "polyline",
+      {
+        points: pts,
+        fill: "none",
+        stroke: color,
+        strokeWidth: "1.8",
+        strokeLinecap: "round",
+        strokeLinejoin: "round",
+        style: {
+          strokeDasharray: len,
+          strokeDashoffset: len,
+          animation: "pathDraw 900ms var(--ease-out-expo) 100ms forwards",
+          "--len": len
+        }
+      }
+    ));
   };
   const TrendChart = ({ data, height = 220 }) => {
     const w = 680;
@@ -2325,7 +3052,7 @@ window.NwcFullLogo = NwcFullLogo;
       );
       offset += dash;
       return el;
-    })), center && /* @__PURE__ */ React.createElement("div", { style: { position: "absolute", inset: 0, display: "grid", placeItems: "center", textAlign: "center" } }, /* @__PURE__ */ React.createElement("div", { className: "kpi-value-anim" }, center)));
+    })), center && /* @__PURE__ */ React.createElement("div", { style: { position: "absolute", inset: 0, display: "grid", placeItems: "center", textAlign: "center" } }, /* @__PURE__ */ React.createElement("div", { className: "donut-center" }, center)));
   };
   const HBar = ({ items, showBreach = false }) => {
     const max = Math.max(...items.map((i) => i.value));
@@ -3070,6 +3797,7 @@ ${bodyHtml}
               if (isMobile) setMobileOpen(false);
             },
             title: collapsed && !isMobile ? it.ar : "",
+            className: "nav-item",
             style: {
               width: "100%",
               display: "grid",
@@ -3085,14 +3813,30 @@ ${bodyHtml}
               color: active ? "var(--ink)" : "var(--ink-2)",
               fontWeight: active ? 700 : 500,
               fontSize: 13,
-              transition: "background .12s, color .12s",
+              transition: "background 240ms cubic-bezier(0.16, 1, 0.3, 1), color 240ms ease, border-color 240ms ease, padding-inline-start 240ms cubic-bezier(0.16, 1, 0.3, 1)",
               justifyItems: collapsed && !isMobile ? "center" : "start",
               alignItems: "center",
               fontFamily: "inherit",
               textAlign: "start"
             },
-            onMouseEnter: (e) => !active && (e.currentTarget.style.background = "var(--paper-warm)", e.currentTarget.style.color = "var(--ink)"),
-            onMouseLeave: (e) => !active && (e.currentTarget.style.background = "transparent", e.currentTarget.style.color = "var(--ink-2)")
+            onMouseEnter: (e) => {
+              if (!active) {
+                e.currentTarget.style.background = "var(--paper-warm)";
+                e.currentTarget.style.color = "var(--ink)";
+                if (!(collapsed && !isMobile)) {
+                  e.currentTarget.style.paddingInlineStart = "24px";
+                }
+              }
+            },
+            onMouseLeave: (e) => {
+              if (!active) {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.color = "var(--ink-2)";
+                if (!(collapsed && !isMobile)) {
+                  e.currentTarget.style.paddingInlineStart = "20px";
+                }
+              }
+            }
           },
           (!collapsed || isMobile) && /* @__PURE__ */ React.createElement("span", { style: {
             fontFamily: "'JetBrains Mono', monospace",
@@ -3188,7 +3932,7 @@ ${bodyHtml}
           color: "var(--ink-2)",
           position: "relative",
           borderRadius: 0,
-          transition: "all 0.15s ease"
+          transition: "all 0.18s ease"
         },
         onMouseEnter: (e) => {
           e.currentTarget.style.background = "var(--paper-warm)";
@@ -3200,7 +3944,7 @@ ${bodyHtml}
         },
         title: "\u0627\u0644\u0625\u0634\u0640\u0639\u0627\u0631\u0627\u062A"
       },
-      /* @__PURE__ */ React.createElement(Icon, { name: "bell", size: 17 }),
+      /* @__PURE__ */ React.createElement("span", { className: unread > 0 ? "anim-bell-shake" : "", style: { display: "inline-block", lineHeight: 0 } }, /* @__PURE__ */ React.createElement(Icon, { name: "bell", size: 17 })),
       unread > 0 && /* @__PURE__ */ React.createElement("span", { className: "notif-dot", "aria-label": `${unread} \u0625\u0634\u0640\u0639\u0627\u0631\u0627\u062A \u062C\u062F\u064A\u062F\u0629` })
     ), open && /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { position: "fixed", inset: 0, zIndex: 40 }, onClick: () => setOpen(false) }), /* @__PURE__ */ React.createElement("div", { className: "notif-dropdown", style: {
       position: "absolute",
@@ -3812,7 +4556,7 @@ ${bodyHtml}
         title: theme === "light" ? "\u0627\u0644\u0648\u0636\u0640\u0639 \u0627\u0644\u0644\u064A\u0640\u0644\u064A" : "\u0627\u0644\u0648\u0636\u0640\u0639 \u0627\u0644\u0646\u0640\u0647\u0627\u0631\u064A"
       },
       /* @__PURE__ */ React.createElement(Icon, { name: theme === "light" ? "moon" : "sun", size: 15 })
-    )), /* @__PURE__ */ React.createElement("div", { style: { flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "32px 24px" } }, /* @__PURE__ */ React.createElement("div", { style: { width: "100%", maxWidth: 420 } }, /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 32 } }, /* @__PURE__ */ React.createElement("h2", { style: {
+    )), /* @__PURE__ */ React.createElement("div", { style: { flex: 1, display: "flex", alignItems: "center", justifyContent: "center", padding: "32px 24px" } }, /* @__PURE__ */ React.createElement("div", { style: { width: "100%", maxWidth: 420 } }, /* @__PURE__ */ React.createElement("div", { className: "anim-fade-up", style: { marginBottom: 32, animationDelay: "120ms" } }, /* @__PURE__ */ React.createElement("h2", { style: {
       fontSize: 32,
       fontWeight: 900,
       letterSpacing: "-0.025em",
@@ -3825,7 +4569,7 @@ ${bodyHtml}
       lineHeight: 1.65,
       color: "var(--ink-2)",
       margin: 0
-    } }, "\u0633\u062C\u0651\u0644 \u0627\u0644\u062F\u062E\u0648\u0644 \u0628\u062D\u0633\u0640\u0627\u0628\u0643 \u0627\u0644\u0648\u0638\u0640\u064A\u0641\u064A \u0644\u0644\u0627\u0633\u062A\u0640\u0645\u0631\u0627\u0631 \u0625\u0644\u0649 \u0644\u0648\u062D\u0629 \u0627\u0644\u062A\u062D\u0640\u0643\u0645.")), /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 22 } }, /* @__PURE__ */ React.createElement("label", null, "\u0627\u0644\u0631\u0642\u0640\u0645 \u0627\u0644\u0648\u0638\u0640\u064A\u0641\u064A \u0623\u0648 \u0627\u0644\u0628\u0631\u064A\u062F \u0627\u0644\u0625\u0644\u0643\u0640\u062A\u0631\u0648\u0646\u064A"), /* @__PURE__ */ React.createElement("div", { style: { position: "relative" } }, /* @__PURE__ */ React.createElement(Icon, { name: "user", size: 14, style: {
+    } }, "\u0633\u062C\u0651\u0644 \u0627\u0644\u062F\u062E\u0648\u0644 \u0628\u062D\u0633\u0640\u0627\u0628\u0643 \u0627\u0644\u0648\u0638\u0640\u064A\u0641\u064A \u0644\u0644\u0627\u0633\u062A\u0640\u0645\u0631\u0627\u0631 \u0625\u0644\u0649 \u0644\u0648\u062D\u0629 \u0627\u0644\u062A\u062D\u0640\u0643\u0645.")), /* @__PURE__ */ React.createElement("div", { className: "anim-fade-up", style: { marginBottom: 22, animationDelay: "220ms" } }, /* @__PURE__ */ React.createElement("label", null, "\u0627\u0644\u0631\u0642\u0640\u0645 \u0627\u0644\u0648\u0638\u0640\u064A\u0641\u064A \u0623\u0648 \u0627\u0644\u0628\u0631\u064A\u062F \u0627\u0644\u0625\u0644\u0643\u0640\u062A\u0631\u0648\u0646\u064A"), /* @__PURE__ */ React.createElement("div", { style: { position: "relative" } }, /* @__PURE__ */ React.createElement(Icon, { name: "user", size: 14, style: {
       position: "absolute",
       top: "50%",
       transform: "translateY(-50%)",
@@ -3842,7 +4586,7 @@ ${bodyHtml}
         autoFocus: true,
         onKeyDown: (e) => e.key === "Enter" && submit()
       }
-    ))), /* @__PURE__ */ React.createElement("div", { style: { marginBottom: 22 } }, /* @__PURE__ */ React.createElement("label", null, "\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631"), /* @__PURE__ */ React.createElement("div", { style: { position: "relative" } }, /* @__PURE__ */ React.createElement(Icon, { name: "lock", size: 14, style: {
+    ))), /* @__PURE__ */ React.createElement("div", { className: "anim-fade-up", style: { marginBottom: 22, animationDelay: "300ms" } }, /* @__PURE__ */ React.createElement("label", null, "\u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631"), /* @__PURE__ */ React.createElement("div", { style: { position: "relative" } }, /* @__PURE__ */ React.createElement(Icon, { name: "lock", size: 14, style: {
       position: "absolute",
       top: "50%",
       transform: "translateY(-50%)",
@@ -3881,7 +4625,7 @@ ${bodyHtml}
         tabIndex: -1
       },
       /* @__PURE__ */ React.createElement(Icon, { name: showPw ? "eyeOff" : "eye", size: 14 })
-    ))), err && /* @__PURE__ */ React.createElement("div", { style: {
+    ))), err && /* @__PURE__ */ React.createElement("div", { className: "anim-shake", style: {
       padding: "12px 14px",
       background: "var(--vermillion-tint)",
       border: "1px solid var(--vermillion)",
@@ -3898,11 +4642,12 @@ ${bodyHtml}
       fontWeight: 700,
       letterSpacing: "0.18em",
       paddingTop: 1
-    } }, "\u2014 ERROR"), /* @__PURE__ */ React.createElement("span", { style: { fontWeight: 500 } }, err)), /* @__PURE__ */ React.createElement("div", { style: {
+    } }, "\u2014 ERROR"), /* @__PURE__ */ React.createElement("span", { style: { fontWeight: 500 } }, err)), /* @__PURE__ */ React.createElement("div", { className: "anim-fade-up", style: {
       display: "flex",
       alignItems: "center",
       justifyContent: "space-between",
-      marginBottom: 24
+      marginBottom: 24,
+      animationDelay: "380ms"
     } }, /* @__PURE__ */ React.createElement("label", { style: {
       display: "flex",
       alignItems: "center",
@@ -3927,12 +4672,13 @@ ${bodyHtml}
       padding: 0,
       borderBottom: "1px solid var(--petrol)",
       paddingBottom: 1
-    } }, "\u0646\u0633\u0640\u064A\u062A \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631\u061F")), /* @__PURE__ */ React.createElement("button", { className: "btn primary lg", style: {
+    } }, "\u0646\u0633\u0640\u064A\u062A \u0643\u0644\u0645\u0629 \u0627\u0644\u0645\u0631\u0648\u0631\u061F")), /* @__PURE__ */ React.createElement("button", { className: "btn primary lg anim-fade-up", style: {
       width: "100%",
       height: 50,
       fontSize: 14,
-      opacity: loading ? 0.6 : 1
-    }, onClick: submit, disabled: loading }, loading ? "\u062C\u0627\u0631\u064A \u0627\u0644\u062F\u062E\u0640\u0648\u0644..." : /* @__PURE__ */ React.createElement(React.Fragment, null, "\u062A\u0633\u062C\u064A\u0640\u0644 \u0627\u0644\u062F\u062E\u0640\u0648\u0644 ", /* @__PURE__ */ React.createElement(Icon, { name: "arrow", size: 14, style: { transform: "scaleX(-1)" } }))), /* @__PURE__ */ React.createElement("div", { style: { margin: "28px 0 16px", display: "flex", alignItems: "center", gap: 12 } }, /* @__PURE__ */ React.createElement("div", { style: { flex: 1, height: 1, background: "var(--hair-strong)" } }), /* @__PURE__ */ React.createElement("span", { style: {
+      opacity: loading ? 0.6 : 1,
+      animationDelay: "460ms"
+    }, onClick: submit, disabled: loading }, loading ? /* @__PURE__ */ React.createElement(React.Fragment, null, "\u062C\u0627\u0631\u064A \u0627\u0644\u062F\u062E\u0640\u0648\u0644", /* @__PURE__ */ React.createElement("span", { className: "loading-dots", style: { marginInlineStart: 8 } }, /* @__PURE__ */ React.createElement("span", null), /* @__PURE__ */ React.createElement("span", null), /* @__PURE__ */ React.createElement("span", null))) : /* @__PURE__ */ React.createElement(React.Fragment, null, "\u062A\u0633\u062C\u064A\u0640\u0644 \u0627\u0644\u062F\u062E\u0640\u0648\u0644 ", /* @__PURE__ */ React.createElement(Icon, { name: "arrow", size: 14, style: { transform: "scaleX(-1)" } }))), /* @__PURE__ */ React.createElement("div", { className: "anim-fade-up", style: { margin: "28px 0 16px", display: "flex", alignItems: "center", gap: 12, animationDelay: "540ms" } }, /* @__PURE__ */ React.createElement("div", { style: { flex: 1, height: 1, background: "var(--hair-strong)" } }), /* @__PURE__ */ React.createElement("span", { style: {
       fontSize: 10,
       fontWeight: 700,
       letterSpacing: "0.18em",
@@ -3942,6 +4688,7 @@ ${bodyHtml}
       "button",
       {
         onClick: () => setShowHints(!showHints),
+        className: "anim-fade-up",
         style: {
           width: "100%",
           padding: "11px 14px",
@@ -3957,13 +4704,16 @@ ${bodyHtml}
           display: "flex",
           alignItems: "center",
           gap: 10,
-          transition: "all 0.15s ease"
+          transition: "all 0.18s ease",
+          animationDelay: "600ms"
         },
         onMouseEnter: (e) => {
           e.currentTarget.style.background = "var(--paper-warm)";
+          e.currentTarget.style.borderColor = "var(--petrol)";
         },
         onMouseLeave: (e) => {
           e.currentTarget.style.background = "transparent";
+          e.currentTarget.style.borderColor = "var(--hair-strong)";
         }
       },
       /* @__PURE__ */ React.createElement(Icon, { name: "user", size: 13 }),
@@ -4117,7 +4867,7 @@ ${bodyHtml}
     } }, sub)), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 10, alignItems: "center", flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("span", { style: {
       display: "inline-flex",
       alignItems: "center",
-      gap: 6,
+      gap: 8,
       padding: "5px 10px",
       fontSize: 10,
       fontWeight: 700,
@@ -4126,7 +4876,7 @@ ${bodyHtml}
       color: "var(--ink-3)",
       border: "1px solid var(--hair-strong)",
       background: "var(--paper-card)"
-    } }, /* @__PURE__ */ React.createElement(Icon, { name: "refresh", size: 11 }), "\u0622\u062E\u0631 \u062A\u062D\u062F\u064A\u0640\u062B \u0642\u0628\u0644 \u062F\u0642\u064A\u0642\u0640\u0629"), can("export_reports") && /* @__PURE__ */ React.createElement(ExportMenu, { tickets: tickets || [], title: "\u062A\u0642\u0631\u064A\u0640\u0631 \u0644\u0648\u062D\u0629 \u0627\u0644\u062A\u062D\u0640\u0643\u0645", filename: "dashboard-report", small: true }), can("create_ticket") && /* @__PURE__ */ React.createElement("button", { className: "btn primary sm hide-on-mobile", onClick: () => setNewOpen(true) }, /* @__PURE__ */ React.createElement(Icon, { name: "plus", size: 13 }), " \u0637\u0644\u0640\u0628 \u062C\u062F\u064A\u0640\u062F")));
+    } }, /* @__PURE__ */ React.createElement("span", { className: "live-dot" }), "\u0645\u0628\u0627\u0634\u0640\u0631 \u2014 \u0622\u062E\u0631 \u062A\u062D\u062F\u064A\u0640\u062B \u0627\u0644\u0622\u0646"), can("export_reports") && /* @__PURE__ */ React.createElement(ExportMenu, { tickets: tickets || [], title: "\u062A\u0642\u0631\u064A\u0640\u0631 \u0644\u0648\u062D\u0629 \u0627\u0644\u062A\u062D\u0640\u0643\u0645", filename: "dashboard-report", small: true }), can("create_ticket") && /* @__PURE__ */ React.createElement("button", { className: "btn primary sm hide-on-mobile", onClick: () => setNewOpen(true) }, /* @__PURE__ */ React.createElement(Icon, { name: "plus", size: 13 }), " \u0637\u0644\u0640\u0628 \u062C\u062F\u064A\u0640\u062F")));
   };
   const DashL1 = () => {
     const { scopedTickets, me } = useApp();
@@ -4136,7 +4886,7 @@ ${bodyHtml}
     const createdAll = myCreated.length;
     const rejectedCount = myCreated.filter((t) => t.status === "overdue").length;
     const transferredCount = myCreated.filter((t) => t.status !== "new" && t.status !== "overdue").length;
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0623\u064F\u062F\u062E\u0640\u0644 \u0627\u0644\u064A\u0648\u0645", value: String(createdToday), icon: "plus", tone: "info" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0623\u064F\u062F\u062E\u0640\u0644 \u0647\u0630\u0627 \u0627\u0644\u0623\u0633\u0640\u0628\u0648\u0639", value: String(createdAll), icon: "tickets", tone: "purple" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u0631\u0641\u0648\u0636\u0629 \u0644\u0644\u062A\u0635\u0640\u062D\u064A\u062D", value: String(rejectedCount), icon: "alert", tone: "warn" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u062D\u064F\u0648\u0650\u0651\u0644\u0640\u062A \u0628\u0646\u0640\u062C\u0627\u062D", value: String(transferredCount), icon: "check", tone: "ok" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 14 } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { marginBottom: 14 } }, /* @__PURE__ */ React.createElement("h3", null, "\u0622\u062E\u0631 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u0627\u0644\u062A\u064A \u0623\u062F\u062E\u0644\u0640\u062A\u0647\u0627"), /* @__PURE__ */ React.createElement("span", { className: "spacer" }), /* @__PURE__ */ React.createElement("button", { className: "btn sm ghost" }, "\u0639\u0631\u0636 \u0627\u0644\u0643\u0644")), /* @__PURE__ */ React.createElement(TicketMiniList, { tickets: (myCreated.length ? myCreated : scopedTickets).slice(0, 6) })), /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("h3", { style: { marginBottom: 14 } }, "\u0627\u0644\u0623\u0642\u0640\u0633\u0627\u0645 \u0627\u0644\u0623\u0643\u0640\u062B\u0631 \u062A\u062D\u0648\u064A\u0640\u0644\u0627\u064B"), /* @__PURE__ */ React.createElement(HBar, { items: BY_DEPT.slice(0, 5).map((b) => {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "stagger stagger-up", style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0623\u064F\u062F\u062E\u0640\u0644 \u0627\u0644\u064A\u0648\u0645", value: String(createdToday), icon: "plus", tone: "info" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0623\u064F\u062F\u062E\u0640\u0644 \u0647\u0630\u0627 \u0627\u0644\u0623\u0633\u0640\u0628\u0648\u0639", value: String(createdAll), icon: "tickets", tone: "purple" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u0631\u0641\u0648\u0636\u0629 \u0644\u0644\u062A\u0635\u0640\u062D\u064A\u062D", value: String(rejectedCount), icon: "alert", tone: "warn" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u062D\u064F\u0648\u0650\u0651\u0644\u0640\u062A \u0628\u0646\u0640\u062C\u0627\u062D", value: String(transferredCount), icon: "check", tone: "ok" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 14 } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { marginBottom: 14 } }, /* @__PURE__ */ React.createElement("h3", null, "\u0622\u062E\u0631 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u0627\u0644\u062A\u064A \u0623\u062F\u062E\u0644\u0640\u062A\u0647\u0627"), /* @__PURE__ */ React.createElement("span", { className: "spacer" }), /* @__PURE__ */ React.createElement("button", { className: "btn sm ghost" }, "\u0639\u0631\u0636 \u0627\u0644\u0643\u0644")), /* @__PURE__ */ React.createElement(TicketMiniList, { tickets: (myCreated.length ? myCreated : scopedTickets).slice(0, 6) })), /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("h3", { style: { marginBottom: 14 } }, "\u0627\u0644\u0623\u0642\u0640\u0633\u0627\u0645 \u0627\u0644\u0623\u0643\u0640\u062B\u0631 \u062A\u062D\u0648\u064A\u0640\u0644\u0627\u064B"), /* @__PURE__ */ React.createElement(HBar, { items: BY_DEPT.slice(0, 5).map((b) => {
       const d = DEPARTMENTS.find((x) => x.id === b.id);
       return { label: d.ar, value: b.open, color: d.color };
     }) }), /* @__PURE__ */ React.createElement("div", { style: {
@@ -4170,7 +4920,7 @@ ${bodyHtml}
       overdue: scopedTickets.filter((t) => t.status === "overdue").length,
       closed: scopedTickets.filter((t) => t.status === "closed").length
     };
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0637\u0644\u0628\u0627\u062A\u0640\u064A \u0627\u0644\u0645\u0641\u0640\u062A\u0648\u062D\u0629", value: String(openCount), icon: "tickets", tone: "info" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0639\u0627\u062C\u0640\u0644\u0629 / \u0645\u062A\u0623\u062E\u0631\u0629", value: String(urgentCount), icon: "alert", tone: "danger" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u0639\u062F\u0644 \u0627\u0644\u0625\u063A\u0640\u0644\u0627\u0642", value: String(closeRate), suffix: "%", icon: "check", tone: "ok" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u062A\u0648\u0633\u0640\u0637 \u0632\u0645\u0646 \u0627\u0644\u0645\u0640\u0639\u0627\u0644\u062C\u0629", value: avgAge, suffix: "\u0633", icon: "clock", tone: "warn" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { marginBottom: 10 } }, /* @__PURE__ */ React.createElement("h3", null, "\u0642\u0627\u0626\u0640\u0645\u0629 \u0627\u0644\u0639\u0640\u0645\u0644 \u2014 \u0627\u0644\u064A\u0648\u0645"), urgentCount > 0 && /* @__PURE__ */ React.createElement("span", { className: "chip warn", style: { marginInlineStart: 6 } }, /* @__PURE__ */ React.createElement("span", { className: "num" }, urgentCount), " \u0639\u0627\u062C\u0640\u0644\u0629"), /* @__PURE__ */ React.createElement("span", { className: "spacer" }), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 6 } }, filters.map((t) => /* @__PURE__ */ React.createElement("button", { key: t.id, className: "btn sm", onClick: () => setFilter(t.id), style: {
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "stagger stagger-up", style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0637\u0644\u0628\u0627\u062A\u0640\u064A \u0627\u0644\u0645\u0641\u0640\u062A\u0648\u062D\u0629", value: String(openCount), icon: "tickets", tone: "info" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0639\u0627\u062C\u0640\u0644\u0629 / \u0645\u062A\u0623\u062E\u0631\u0629", value: String(urgentCount), icon: "alert", tone: "danger" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u0639\u062F\u0644 \u0627\u0644\u0625\u063A\u0640\u0644\u0627\u0642", value: String(closeRate), suffix: "%", icon: "check", tone: "ok" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u062A\u0648\u0633\u0640\u0637 \u0632\u0645\u0646 \u0627\u0644\u0645\u0640\u0639\u0627\u0644\u062C\u0629", value: avgAge, suffix: "\u0633", icon: "clock", tone: "warn" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1.4fr 1fr", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { marginBottom: 10 } }, /* @__PURE__ */ React.createElement("h3", null, "\u0642\u0627\u0626\u0640\u0645\u0629 \u0627\u0644\u0639\u0640\u0645\u0644 \u2014 \u0627\u0644\u064A\u0648\u0645"), urgentCount > 0 && /* @__PURE__ */ React.createElement("span", { className: "chip warn", style: { marginInlineStart: 6 } }, /* @__PURE__ */ React.createElement("span", { className: "num" }, urgentCount), " \u0639\u0627\u062C\u0640\u0644\u0629"), /* @__PURE__ */ React.createElement("span", { className: "spacer" }), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 6 } }, filters.map((t) => /* @__PURE__ */ React.createElement("button", { key: t.id, className: "btn sm", onClick: () => setFilter(t.id), style: {
       background: filter === t.id ? "var(--petrol-tint)" : "transparent",
       color: filter === t.id ? "var(--petrol)" : "var(--ink-2)",
       fontWeight: filter === t.id ? 700 : 500,
@@ -4215,7 +4965,7 @@ ${bodyHtml}
       borderInlineStart: `3px solid ${myDept.color || "var(--petrol)"}`,
       border: "1px solid var(--hair-strong)",
       gap: 10
-    } }, /* @__PURE__ */ React.createElement(Icon, { name: myDept.icon || "building", size: 18, color: myDept.color || "var(--petrol)" }), /* @__PURE__ */ React.createElement("strong", { style: { color: "var(--ink)" } }, myDept.ar || "\u0627\u0644\u0642\u0640\u0633\u0645"), /* @__PURE__ */ React.createElement("span", { style: { color: "var(--ink-3)", fontSize: 12 } }, "\xB7 ", EMPLOYEES.filter((e) => e.dept === myDeptId).length, " \u0645\u0648\u0638\u0641\u0640\u064A\u0646 \u062A\u0627\u0628\u0639\u0640\u064A\u0646"), /* @__PURE__ */ React.createElement("span", { className: "spacer" }), /* @__PURE__ */ React.createElement(Toggle, { checked: editMode, onChange: setEditMode, label: "\u062A\u062E\u0635\u0640\u064A\u0635 \u0627\u0644\u0644\u0648\u062D\u0629" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0637\u0644\u0640\u0628\u0627\u062A \u0627\u0644\u0642\u0640\u0633\u0645 \u0627\u0644\u0645\u0641\u0640\u062A\u0648\u062D\u0629", value: String(openCount), icon: "tickets", tone: "info" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u063A\u0644\u0640\u0642\u0629 \u0647\u0630\u0627 \u0627\u0644\u0634\u0640\u0647\u0631", value: String(closedCount), icon: "check", tone: "ok" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u062A\u062C\u0627\u0648\u0632\u062A SLA", value: String(overdueCount), icon: "alert", tone: "danger" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0631\u0636\u0627 \u0627\u0644\u0639\u0645\u0640\u0644\u0627\u0621", value: String(satisfaction), suffix: "%", icon: "star", tone: "purple" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "2fr 1fr", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(WidgetCard, { id: "l3-trend", editMode, title: "\u062D\u0631\u0643\u0629 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u2014 \u0622\u062E\u0631 \u0661\u0664 \u064A\u0648\u0645", subtitle: "\u0627\u0644\u0645\u0641\u0640\u062A\u0648\u062D\u0629 \xB7 \u0627\u0644\u0645\u063A\u0640\u0644\u0642\u0629 \xB7 \u0627\u0644\u0645\u0640\u062A\u0623\u062E\u0631\u0629" }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 14, fontSize: 12, marginBottom: 8 } }, /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--petrol)", label: "\u0637\u0644\u0640\u0628\u0627\u062A \u062C\u062F\u064A\u062F\u0629" }), /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--moss)", label: "\u0645\u063A\u0644\u0640\u0642\u0629" }), /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--vermillion)", label: "\u062A\u062C\u0627\u0648\u0632\u062A SLA" })), /* @__PURE__ */ React.createElement(TrendChart, { data: TREND })), /* @__PURE__ */ React.createElement(WidgetCard, { id: "l3-emps", editMode, title: "\u0623\u062F\u0627\u0621 \u0627\u0644\u0645\u0648\u0638\u0640\u0641\u064A\u0646", subtitle: "\u062A\u0631\u062A\u064A\u0640\u0628 \u062D\u0633\u0628 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u0627\u0644\u0645\u0640\u0639\u0627\u0644\u062C\u0629" }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 10 } }, (myEmps.length ? myEmps : EMPLOYEES.filter((e) => e.role === "L2").slice(0, 5)).map((emp, i) => /* @__PURE__ */ React.createElement("div", { key: emp.id, className: "hstack", style: { gap: 10 } }, /* @__PURE__ */ React.createElement("span", { className: "num", style: { width: 18, fontSize: 11, color: "var(--ink-3)", fontWeight: 700 } }, "#", i + 1), /* @__PURE__ */ React.createElement(Avatar, { name: emp.ar, gender: emp.gender, size: 32 }), /* @__PURE__ */ React.createElement("div", { style: { flex: 1, minWidth: 0 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 13, fontWeight: 600, lineHeight: 1.2 } }, emp.ar), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: "var(--ink-3)" } }, emp.title)), /* @__PURE__ */ React.createElement("div", { style: { textAlign: "end" } }, /* @__PURE__ */ React.createElement("div", { className: "num", style: { fontSize: 14, fontWeight: 700 } }, emp.handled), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 10, color: "var(--ink-3)" } }, "\u0637\u0644\u0628"))))))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 } }, /* @__PURE__ */ React.createElement(WidgetCard, { id: "l3-types", editMode, title: "\u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u062D\u0633\u0628 \u0627\u0644\u0646\u0648\u0639" }, /* @__PURE__ */ React.createElement(HBar, { items: myTypes.map((t, i) => ({
+    } }, /* @__PURE__ */ React.createElement(Icon, { name: myDept.icon || "building", size: 18, color: myDept.color || "var(--petrol)" }), /* @__PURE__ */ React.createElement("strong", { style: { color: "var(--ink)" } }, myDept.ar || "\u0627\u0644\u0642\u0640\u0633\u0645"), /* @__PURE__ */ React.createElement("span", { style: { color: "var(--ink-3)", fontSize: 12 } }, "\xB7 ", EMPLOYEES.filter((e) => e.dept === myDeptId).length, " \u0645\u0648\u0638\u0641\u0640\u064A\u0646 \u062A\u0627\u0628\u0639\u0640\u064A\u0646"), /* @__PURE__ */ React.createElement("span", { className: "spacer" }), /* @__PURE__ */ React.createElement(Toggle, { checked: editMode, onChange: setEditMode, label: "\u062A\u062E\u0635\u0640\u064A\u0635 \u0627\u0644\u0644\u0648\u062D\u0629" })), /* @__PURE__ */ React.createElement("div", { className: "stagger stagger-up", style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0637\u0644\u0640\u0628\u0627\u062A \u0627\u0644\u0642\u0640\u0633\u0645 \u0627\u0644\u0645\u0641\u0640\u062A\u0648\u062D\u0629", value: String(openCount), icon: "tickets", tone: "info" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u063A\u0644\u0640\u0642\u0629 \u0647\u0630\u0627 \u0627\u0644\u0634\u0640\u0647\u0631", value: String(closedCount), icon: "check", tone: "ok" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u062A\u062C\u0627\u0648\u0632\u062A SLA", value: String(overdueCount), icon: "alert", tone: "danger" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0631\u0636\u0627 \u0627\u0644\u0639\u0645\u0640\u0644\u0627\u0621", value: String(satisfaction), suffix: "%", icon: "star", tone: "purple" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "2fr 1fr", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(WidgetCard, { id: "l3-trend", editMode, title: "\u062D\u0631\u0643\u0629 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u2014 \u0622\u062E\u0631 \u0661\u0664 \u064A\u0648\u0645", subtitle: "\u0627\u0644\u0645\u0641\u0640\u062A\u0648\u062D\u0629 \xB7 \u0627\u0644\u0645\u063A\u0640\u0644\u0642\u0629 \xB7 \u0627\u0644\u0645\u0640\u062A\u0623\u062E\u0631\u0629" }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 14, fontSize: 12, marginBottom: 8 } }, /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--petrol)", label: "\u0637\u0644\u0640\u0628\u0627\u062A \u062C\u062F\u064A\u062F\u0629" }), /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--moss)", label: "\u0645\u063A\u0644\u0640\u0642\u0629" }), /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--vermillion)", label: "\u062A\u062C\u0627\u0648\u0632\u062A SLA" })), /* @__PURE__ */ React.createElement(TrendChart, { data: TREND })), /* @__PURE__ */ React.createElement(WidgetCard, { id: "l3-emps", editMode, title: "\u0623\u062F\u0627\u0621 \u0627\u0644\u0645\u0648\u0638\u0640\u0641\u064A\u0646", subtitle: "\u062A\u0631\u062A\u064A\u0640\u0628 \u062D\u0633\u0628 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u0627\u0644\u0645\u0640\u0639\u0627\u0644\u062C\u0629" }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 10 } }, (myEmps.length ? myEmps : EMPLOYEES.filter((e) => e.role === "L2").slice(0, 5)).map((emp, i) => /* @__PURE__ */ React.createElement("div", { key: emp.id, className: "hstack", style: { gap: 10 } }, /* @__PURE__ */ React.createElement("span", { className: "num", style: { width: 18, fontSize: 11, color: "var(--ink-3)", fontWeight: 700 } }, "#", i + 1), /* @__PURE__ */ React.createElement(Avatar, { name: emp.ar, gender: emp.gender, size: 32 }), /* @__PURE__ */ React.createElement("div", { style: { flex: 1, minWidth: 0 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 13, fontWeight: 600, lineHeight: 1.2 } }, emp.ar), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: "var(--ink-3)" } }, emp.title)), /* @__PURE__ */ React.createElement("div", { style: { textAlign: "end" } }, /* @__PURE__ */ React.createElement("div", { className: "num", style: { fontSize: 14, fontWeight: 700 } }, emp.handled), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 10, color: "var(--ink-3)" } }, "\u0637\u0644\u0628"))))))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 14 } }, /* @__PURE__ */ React.createElement(WidgetCard, { id: "l3-types", editMode, title: "\u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u062D\u0633\u0628 \u0627\u0644\u0646\u0648\u0639" }, /* @__PURE__ */ React.createElement(HBar, { items: myTypes.map((t, i) => ({
       label: t,
       value: typeCount(t) || 0,
       color: CHART_PALETTE[i % CHART_PALETTE.length]
@@ -4248,7 +4998,7 @@ ${bodyHtml}
       padding: "5px 12px",
       fontSize: 12,
       border: "none"
-    } }, p.l)))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0637\u0644\u0640\u0628\u0627\u062A \u0645\u0641\u0640\u062A\u0648\u062D\u0629", value: String(openCount), icon: "tickets", tone: "info" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u063A\u0644\u0640\u0642\u0629 / \u0634\u0647\u0631\u064A\u0627\u064B", value: String(closedCount), icon: "check", tone: "ok" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0631\u0636\u0627 \u0627\u0644\u0639\u0645\u0640\u0644\u0627\u0621", value: String(satisfaction), suffix: "%", icon: "star", tone: "purple" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u062A\u0623\u062E\u0631\u0629 SLA", value: String(overdueCount), icon: "alert", tone: "danger" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0632\u0645\u0646 \u0627\u0644\u0627\u0633\u0640\u062A\u062C\u0627\u0628\u0629", value: avgResponse, suffix: "\u0633", icon: "clock", tone: "warn" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0625\u0639\u0627\u062F\u0629 \u0641\u062A\u062D", value: String(reopenRate), suffix: "%", icon: "refresh", tone: "teal" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "2fr 1fr", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(WidgetCard, { id: "l4-trend", editMode, title: "\u0627\u0644\u0627\u062A\u0640\u062C\u0627\u0647 \u0627\u0644\u0632\u0645\u0640\u0646\u064A \u2014 \u0622\u062E\u0631 \u0661\u0664 \u064A\u0648\u0645", subtitle: "\u0645\u0642\u0627\u0631\u0646\u0629 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u0627\u0644\u0648\u0627\u0631\u062F\u0629 \u0648\u0627\u0644\u0645\u063A\u0640\u0644\u0642\u0629" }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 14, fontSize: 12, marginBottom: 8 } }, /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--petrol)", label: "\u0637\u0644\u0640\u0628\u0627\u062A \u0648\u0627\u0631\u062F\u0629" }), /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--moss)", label: "\u0637\u0644\u0640\u0628\u0627\u062A \u0645\u063A\u0644\u0640\u0642\u0629" }), /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--vermillion)", label: "\u062A\u062C\u0627\u0648\u0632 SLA", shape: "bar" })), /* @__PURE__ */ React.createElement(TrendChart, { data: TREND, height: 240 })), /* @__PURE__ */ React.createElement(WidgetCard, { id: "l4-sources", editMode, title: "\u062A\u0648\u0632\u064A\u0640\u0639 \u0627\u0644\u0645\u0640\u0635\u0627\u062F\u0631" }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { justifyContent: "center", marginBottom: 14 } }, /* @__PURE__ */ React.createElement(
+    } }, p.l)))), /* @__PURE__ */ React.createElement("div", { className: "stagger stagger-up", style: { display: "grid", gridTemplateColumns: "repeat(6, 1fr)", gap: 12, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0637\u0644\u0640\u0628\u0627\u062A \u0645\u0641\u0640\u062A\u0648\u062D\u0629", value: String(openCount), icon: "tickets", tone: "info" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u063A\u0644\u0640\u0642\u0629 / \u0634\u0647\u0631\u064A\u0627\u064B", value: String(closedCount), icon: "check", tone: "ok" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0631\u0636\u0627 \u0627\u0644\u0639\u0645\u0640\u0644\u0627\u0621", value: String(satisfaction), suffix: "%", icon: "star", tone: "purple" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u062A\u0623\u062E\u0631\u0629 SLA", value: String(overdueCount), icon: "alert", tone: "danger" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0632\u0645\u0646 \u0627\u0644\u0627\u0633\u0640\u062A\u062C\u0627\u0628\u0629", value: avgResponse, suffix: "\u0633", icon: "clock", tone: "warn" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0625\u0639\u0627\u062F\u0629 \u0641\u062A\u062D", value: String(reopenRate), suffix: "%", icon: "refresh", tone: "teal" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "2fr 1fr", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(WidgetCard, { id: "l4-trend", editMode, title: "\u0627\u0644\u0627\u062A\u0640\u062C\u0627\u0647 \u0627\u0644\u0632\u0645\u0640\u0646\u064A \u2014 \u0622\u062E\u0631 \u0661\u0664 \u064A\u0648\u0645", subtitle: "\u0645\u0642\u0627\u0631\u0646\u0629 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A \u0627\u0644\u0648\u0627\u0631\u062F\u0629 \u0648\u0627\u0644\u0645\u063A\u0640\u0644\u0642\u0629" }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 14, fontSize: 12, marginBottom: 8 } }, /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--petrol)", label: "\u0637\u0644\u0640\u0628\u0627\u062A \u0648\u0627\u0631\u062F\u0629" }), /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--moss)", label: "\u0637\u0644\u0640\u0628\u0627\u062A \u0645\u063A\u0644\u0640\u0642\u0629" }), /* @__PURE__ */ React.createElement(LegendDot, { c: "var(--vermillion)", label: "\u062A\u062C\u0627\u0648\u0632 SLA", shape: "bar" })), /* @__PURE__ */ React.createElement(TrendChart, { data: TREND, height: 240 })), /* @__PURE__ */ React.createElement(WidgetCard, { id: "l4-sources", editMode, title: "\u062A\u0648\u0632\u064A\u0640\u0639 \u0627\u0644\u0645\u0640\u0635\u0627\u062F\u0631" }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { justifyContent: "center", marginBottom: 14 } }, /* @__PURE__ */ React.createElement(
       DonutChart,
       {
         size: 180,
@@ -4259,10 +5009,10 @@ ${bodyHtml}
     )), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, fontSize: 11 } }, BY_SOURCE.map((s, i) => {
       const src = SOURCES.find((x) => x.id === s.id);
       return /* @__PURE__ */ React.createElement("div", { key: i, className: "hstack", style: { gap: 6 } }, /* @__PURE__ */ React.createElement("span", { style: { width: 7, height: 7, borderRadius: 999, background: CHART_PALETTE[i % CHART_PALETTE.length] } }), /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, src.ar), /* @__PURE__ */ React.createElement("span", { className: "spacer" }), /* @__PURE__ */ React.createElement("span", { className: "num", style: { fontWeight: 600 } }, s.v, "%"));
-    })))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(WidgetCard, { id: "l4-depts", editMode, title: "\u0623\u062F\u0627\u0621 \u0627\u0644\u0623\u0642\u0640\u0633\u0627\u0645", subtitle: "\u0645\u0641\u0640\u062A\u0648\u062D\u0629 \xB7 \u0645\u063A\u0644\u0640\u0642\u0629 \xB7 \u0645\u062A\u0623\u062E\u0631\u0629" }, /* @__PURE__ */ React.createElement(HBar, { showBreach: true, items: BY_DEPT.map((b) => {
+    })))), /* @__PURE__ */ React.createElement("div", { className: "reveal-on-scroll", style: { display: "grid", gridTemplateColumns: "1.5fr 1fr", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(WidgetCard, { id: "l4-depts", editMode, title: "\u0623\u062F\u0627\u0621 \u0627\u0644\u0623\u0642\u0640\u0633\u0627\u0645", subtitle: "\u0645\u0641\u0640\u062A\u0648\u062D\u0629 \xB7 \u0645\u063A\u0644\u0640\u0642\u0629 \xB7 \u0645\u062A\u0623\u062E\u0631\u0629" }, /* @__PURE__ */ React.createElement(HBar, { showBreach: true, items: BY_DEPT.map((b) => {
       const d = DEPARTMENTS.find((x) => x.id === b.id);
       return { label: d.ar, value: b.closed + b.open, color: d.color, breach: b.breach };
-    }) })), /* @__PURE__ */ React.createElement(WidgetCard, { id: "l4-heat", editMode, title: "\u062E\u0631\u064A\u0640\u0637\u0629 \u062D\u0631\u0627\u0631\u064A\u0629 \u2014 \u0627\u0644\u0646\u0640\u0634\u0627\u0637 \u062E\u0644\u0627\u0644 \u0627\u0644\u0623\u0633\u0640\u0628\u0648\u0639", subtitle: "\u0633\u0627\u0639\u0627\u062A \u0627\u0644\u0630\u0631\u0648\u0629" }, /* @__PURE__ */ React.createElement(HeatmapGrid, null))), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 } }, /* @__PURE__ */ React.createElement(WidgetCard, { id: "l4-top-types", editMode, title: "\u0623\u0639\u0644\u0649 \u0665 \u0623\u0646\u0648\u0627\u0639 \u0634\u0643\u0627\u0648\u0649", compact: true }, /* @__PURE__ */ React.createElement(MiniList, { items: [
+    }) })), /* @__PURE__ */ React.createElement(WidgetCard, { id: "l4-heat", editMode, title: "\u062E\u0631\u064A\u0640\u0637\u0629 \u062D\u0631\u0627\u0631\u064A\u0629 \u2014 \u0627\u0644\u0646\u0640\u0634\u0627\u0637 \u062E\u0644\u0627\u0644 \u0627\u0644\u0623\u0633\u0640\u0628\u0648\u0639", subtitle: "\u0633\u0627\u0639\u0627\u062A \u0627\u0644\u0630\u0631\u0648\u0629" }, /* @__PURE__ */ React.createElement(HeatmapGrid, null))), /* @__PURE__ */ React.createElement("div", { className: "reveal-on-scroll stagger stagger-up", style: { display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 14 } }, /* @__PURE__ */ React.createElement(WidgetCard, { id: "l4-top-types", editMode, title: "\u0623\u0639\u0644\u0649 \u0665 \u0623\u0646\u0648\u0627\u0639 \u0634\u0643\u0627\u0648\u0649", compact: true }, /* @__PURE__ */ React.createElement(MiniList, { items: [
       { l: "\u0627\u0644\u0641\u0648\u0627\u062A\u0640\u064A\u0631 \u0627\u0644\u0645\u0631\u062A\u0641\u0640\u0639\u0629", v: 142, c: "var(--vermillion)" },
       { l: "\u0627\u062E\u062A\u0640\u0644\u0627\u0641 \u0639\u062F\u0627\u062F", v: 98, c: "var(--gold)" },
       { l: "\u062A\u0623\u062E\u0640\u064A\u0631 \u0627\u0644\u062A\u0646\u0640\u0641\u064A\u0630", v: 76, c: "var(--petrol)" },
@@ -4285,7 +5035,7 @@ ${bodyHtml}
     const activeDepts = DEPARTMENTS.length;
     const totalSources = SOURCES.length;
     const totalTypes = Object.values(TYPES || {}).reduce((sum, arr) => sum + (arr?.length || 0), 0);
-    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0625\u062C\u0640\u0645\u0627\u0644\u064A \u0627\u0644\u0645\u0633\u0640\u062A\u062E\u062F\u0645\u0640\u064A\u0646", value: String(totalUsers), icon: "users", tone: "info" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0627\u0644\u0623\u0642\u0640\u0633\u0627\u0645 \u0627\u0644\u0646\u0634\u0640\u0637\u0629", value: String(activeDepts), icon: "building", tone: "purple" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u0635\u0627\u062F\u0631 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A", value: String(totalSources), icon: "tag", tone: "teal" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0623\u0646\u0648\u0627\u0639 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A", value: String(totalTypes), icon: "file", tone: "ok" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("h3", { style: { marginBottom: 14 } }, "\u0635\u062D\u0629 \u0627\u0644\u0646\u0640\u0638\u0627\u0645"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 } }, [
+    return /* @__PURE__ */ React.createElement(React.Fragment, null, /* @__PURE__ */ React.createElement("div", { className: "stagger stagger-up", style: { display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0625\u062C\u0640\u0645\u0627\u0644\u064A \u0627\u0644\u0645\u0633\u0640\u062A\u062E\u062F\u0645\u0640\u064A\u0646", value: String(totalUsers), icon: "users", tone: "info" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0627\u0644\u0623\u0642\u0640\u0633\u0627\u0645 \u0627\u0644\u0646\u0634\u0640\u0637\u0629", value: String(activeDepts), icon: "building", tone: "purple" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0645\u0635\u0627\u062F\u0631 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A", value: String(totalSources), icon: "tag", tone: "teal" }), /* @__PURE__ */ React.createElement(KpiCard, { label: "\u0623\u0646\u0648\u0627\u0639 \u0627\u0644\u0637\u0644\u0640\u0628\u0627\u062A", value: String(totalTypes), icon: "file", tone: "ok" })), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1.3fr 1fr", gap: 14, marginBottom: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 18 } }, /* @__PURE__ */ React.createElement("h3", { style: { marginBottom: 14 } }, "\u0635\u062D\u0629 \u0627\u0644\u0646\u0640\u0638\u0627\u0645"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 } }, [
       { l: "\u0632\u0645\u0646 \u0627\u0644\u0627\u0633\u0640\u062A\u062C\u0627\u0628\u0629", v: "124ms", c: "var(--moss)" },
       { l: "\u0627\u0644\u062A\u062E\u0632\u064A\u0640\u0646 \u0627\u0644\u0645\u0633\u0640\u062A\u062E\u062F\u0645", v: "42%", c: "var(--petrol)" },
       { l: "\u0627\u0644\u0645\u0633\u0640\u062A\u062E\u062F\u0645\u0648\u0646 \u0627\u0644\u0645\u062A\u0635\u0640\u0644\u0648\u0646", v: "34", c: "var(--aubergine)" },
@@ -4640,7 +5390,7 @@ ${bodyHtml}
           textTransform: "uppercase",
           color: filters.status === "all" ? "var(--ink)" : "var(--ink-3)",
           whiteSpace: "nowrap",
-          transition: "all 0.12s ease"
+          transition: "color 240ms ease, border-color 240ms cubic-bezier(0.16, 1, 0.3, 1), background 240ms ease"
         },
         onMouseEnter: (e) => filters.status !== "all" && (e.currentTarget.style.color = "var(--ink)"),
         onMouseLeave: (e) => filters.status !== "all" && (e.currentTarget.style.color = "var(--ink-3)")
@@ -4681,7 +5431,7 @@ ${bodyHtml}
             textTransform: "uppercase",
             color: isActive ? `var(--${tone})` : "var(--ink-3)",
             whiteSpace: "nowrap",
-            transition: "all 0.12s ease"
+            transition: "color 240ms ease, border-color 240ms cubic-bezier(0.16, 1, 0.3, 1), background 240ms ease"
           },
           onMouseEnter: (e) => !isActive && (e.currentTarget.style.color = "var(--ink)"),
           onMouseLeave: (e) => !isActive && (e.currentTarget.style.color = "var(--ink-3)")
@@ -4709,7 +5459,7 @@ ${bodyHtml}
       cursor: "pointer",
       display: "grid",
       placeItems: "center",
-      transition: "all 0.12s ease"
+      transition: "color 240ms ease, border-color 240ms cubic-bezier(0.16, 1, 0.3, 1), background 240ms ease"
     } }, /* @__PURE__ */ React.createElement(Icon, { name: "tickets", size: 14 })), /* @__PURE__ */ React.createElement("button", { onClick: () => setView("kanban"), style: {
       padding: "8px 12px",
       border: "none",
@@ -4719,7 +5469,7 @@ ${bodyHtml}
       cursor: "pointer",
       display: "grid",
       placeItems: "center",
-      transition: "all 0.12s ease"
+      transition: "color 240ms ease, border-color 240ms cubic-bezier(0.16, 1, 0.3, 1), background 240ms ease"
     } }, /* @__PURE__ */ React.createElement(Icon, { name: "dashboard", size: 14 })))), view === "table" ? /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 0, overflow: "hidden" } }, /* @__PURE__ */ React.createElement("div", { className: "table-wrap", style: { overflow: "auto" } }, /* @__PURE__ */ React.createElement("table", { style: { width: "100%", borderCollapse: "collapse", fontSize: 13 } }, /* @__PURE__ */ React.createElement("thead", null, /* @__PURE__ */ React.createElement("tr", null, ["#", "\u0627\u0644\u0631\u0642\u0640\u0645", "\u0627\u0644\u0645\u0648\u0636\u0648\u0639", "\u0627\u0644\u0639\u0645\u0640\u064A\u0644", "\u0627\u0644\u0642\u0640\u0633\u0645", "\u0627\u0644\u0646\u0648\u0639", "\u0627\u0644\u0645\u0640\u0635\u062F\u0631", "\u0627\u0644\u062D\u0627\u0644\u0629", "\u0627\u0644\u0623\u0648\u0644\u0648\u064A\u0629", "\u0627\u0644\u0645\u0640\u0639\u0627\u0644\u062C", "SLA", "\u0625\u062C\u0640\u0631\u0627\u0621\u0627\u062A"].map((h, i) => /* @__PURE__ */ React.createElement("th", { key: i, style: {
       padding: "12px 14px",
       textAlign: "start",
@@ -4738,7 +5488,8 @@ ${bodyHtml}
         "tr",
         {
           key: t.id,
-          style: { borderBottom: "1px solid var(--hair)", cursor: "pointer", transition: "background .1s" },
+          className: "reveal",
+          style: { borderBottom: "1px solid var(--hair)", cursor: "pointer", transition: "background .15s ease" },
           onClick: () => openTicket(t.id),
           onMouseEnter: (e) => e.currentTarget.style.background = "var(--petrol-tint)",
           onMouseLeave: (e) => e.currentTarget.style.background = "transparent"
@@ -4955,7 +5706,7 @@ ${bodyHtml}
       fontWeight: 700,
       letterSpacing: "0.18em",
       color: "var(--moss)"
-    } }, "\u2014 \u062A\u0623\u0643\u064A\u0640\u062F \u0627\u0644\u0625\u063A\u0640\u0644\u0627\u0642")), /* @__PURE__ */ React.createElement("h4", { style: { marginBottom: 10, fontSize: 15, fontWeight: 700 } }, "\u062A\u0623\u0643\u064A\u0640\u062F \u0625\u063A\u0640\u0644\u0627\u0642 \u0627\u0644\u0637\u0640\u0644\u0628"), /* @__PURE__ */ React.createElement("textarea", { rows: "2", placeholder: "\u0633\u0640\u0628\u0628 \u0627\u0644\u0625\u063A\u0640\u0644\u0627\u0642 / \u0627\u0644\u062D\u0640\u0644 \u0627\u0644\u0645\u0642\u0640\u062F\u0645...", value: closeReason, onChange: (e) => setCloseReason(e.target.value) }), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8, marginTop: 12, justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement("button", { className: "btn ghost sm", onClick: () => setShowClose(false) }, "\u0625\u0644\u063A\u0640\u0627\u0621"), /* @__PURE__ */ React.createElement("button", { className: "btn primary sm", onClick: doClose }, /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 13 }), " \u062A\u0623\u0643\u0640\u064A\u062F \u0627\u0644\u0625\u063A\u0640\u0644\u0627\u0642"))), /* @__PURE__ */ React.createElement("div", { className: "ticket-details-grid", style: { display: "grid", gridTemplateColumns: "2fr 1fr", gap: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "vstack", style: { gap: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, marginBottom: 14, flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("span", { className: "num", style: {
+    } }, "\u2014 \u062A\u0623\u0643\u064A\u0640\u062F \u0627\u0644\u0625\u063A\u0640\u0644\u0627\u0642")), /* @__PURE__ */ React.createElement("h4", { style: { marginBottom: 10, fontSize: 15, fontWeight: 700 } }, "\u062A\u0623\u0643\u064A\u0640\u062F \u0625\u063A\u0640\u0644\u0627\u0642 \u0627\u0644\u0637\u0640\u0644\u0628"), /* @__PURE__ */ React.createElement("textarea", { rows: "2", placeholder: "\u0633\u0640\u0628\u0628 \u0627\u0644\u0625\u063A\u0640\u0644\u0627\u0642 / \u0627\u0644\u062D\u0640\u0644 \u0627\u0644\u0645\u0642\u0640\u062F\u0645...", value: closeReason, onChange: (e) => setCloseReason(e.target.value) }), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", gap: 8, marginTop: 12, justifyContent: "flex-end" } }, /* @__PURE__ */ React.createElement("button", { className: "btn ghost sm", onClick: () => setShowClose(false) }, "\u0625\u0644\u063A\u0640\u0627\u0621"), /* @__PURE__ */ React.createElement("button", { className: "btn primary sm", onClick: doClose }, /* @__PURE__ */ React.createElement(Icon, { name: "check", size: 13 }), " \u062A\u0623\u0643\u0640\u064A\u062F \u0627\u0644\u0625\u063A\u0640\u0644\u0627\u0642"))), /* @__PURE__ */ React.createElement("div", { className: "ticket-details-grid stagger stagger-up", style: { display: "grid", gridTemplateColumns: "2fr 1fr", gap: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "vstack", style: { gap: 18 } }, /* @__PURE__ */ React.createElement("div", { className: "card", style: { padding: 24 } }, /* @__PURE__ */ React.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10, marginBottom: 14, flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("span", { className: "num", style: {
       fontSize: 11,
       color: "var(--paper)",
       fontWeight: 700,
@@ -5094,17 +5845,24 @@ ${bodyHtml}
             alignItems: "flex-start",
             gap: 10,
             borderRadius: 0,
-            transition: "all 0.15s ease",
+            transition: "border-color 280ms cubic-bezier(0.16, 1, 0.3, 1), background 280ms ease, transform 280ms cubic-bezier(0.16, 1, 0.3, 1), box-shadow 280ms ease",
             position: "relative",
             overflow: "hidden"
           },
           onMouseEnter: (e) => {
             e.currentTarget.style.borderColor = tint.color || "var(--ink)";
             e.currentTarget.style.background = tint.bg || "var(--paper-warm)";
+            e.currentTarget.style.transform = "translateY(-2px)";
+            e.currentTarget.style.boxShadow = `0 8px 18px -8px ${tint.color || "rgba(17, 68, 140, 0.3)"}`;
           },
           onMouseLeave: (e) => {
             e.currentTarget.style.borderColor = "var(--hair-strong)";
             e.currentTarget.style.background = "var(--paper-card)";
+            e.currentTarget.style.transform = "translateY(0)";
+            e.currentTarget.style.boxShadow = "none";
+          },
+          onMouseDown: (e) => {
+            e.currentTarget.style.transform = "translateY(0)";
           }
         },
         /* @__PURE__ */ React.createElement("span", { style: {
@@ -5565,10 +6323,10 @@ ${bodyHtml}
         fontSize: 12,
         whiteSpace: "nowrap"
       } }, /* @__PURE__ */ React.createElement("span", { style: { width: 6, height: 6, borderRadius: 999, background: filter === d.id ? "#fff" : d.color } }), d.ar.replace("\u0642\u0633\u0645 ", ""), " ", /* @__PURE__ */ React.createElement("span", { style: { marginInlineStart: 4, opacity: 0.7 }, className: "num" }, c));
-    })), list.length === 0 && /* @__PURE__ */ React.createElement("div", { style: { padding: 50, textAlign: "center", background: "var(--bg-card)", borderRadius: 14, color: "var(--text-muted)" } }, "\u0644\u0627 \u064A\u0648\u062C\u062F \u0645\u0648\u0638\u0640\u0641\u0648\u0646 \u0628\u0645\u0639\u0627\u064A\u0640\u064A\u0631 \u0627\u0644\u0628\u0640\u062D\u062B \u0627\u0644\u062D\u0627\u0644\u064A\u0629"), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 } }, list.map((e) => {
+    })), list.length === 0 && /* @__PURE__ */ React.createElement("div", { style: { padding: 50, textAlign: "center", background: "var(--bg-card)", borderRadius: 14, color: "var(--text-muted)" } }, "\u0644\u0627 \u064A\u0648\u062C\u062F \u0645\u0648\u0638\u0640\u0641\u0648\u0646 \u0628\u0645\u0639\u0627\u064A\u0640\u064A\u0631 \u0627\u0644\u0628\u0640\u062D\u062B \u0627\u0644\u062D\u0627\u0644\u064A\u0629"), /* @__PURE__ */ React.createElement("div", { className: "stagger stagger-up", style: { display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 12 } }, list.map((e) => {
       const dept = DEPARTMENTS.find((d) => d.id === e.dept);
       const roleInfo = ROLES.find((r) => r.id === e.role);
-      return /* @__PURE__ */ React.createElement("div", { key: e.empNo, className: "card", style: { padding: 16, position: "relative", opacity: e.active ? 1 : 0.6 } }, /* @__PURE__ */ React.createElement("div", { style: { position: "absolute", top: 0, insetInlineStart: 0, width: "100%", height: 4, background: dept?.color, borderRadius: "var(--r-lg) var(--r-lg) 0 0" } }), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 12, marginBottom: 12 } }, /* @__PURE__ */ React.createElement(Avatar, { name: e.ar, gender: e.gender, size: 52 }), /* @__PURE__ */ React.createElement("div", { style: { minWidth: 0, flex: 1 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 14, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, e.ar), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: "var(--text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }, dir: "ltr" }, e.en), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 6, marginTop: 4, flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("span", { className: `chip ${roleInfo.tone || "neutral"}`, style: { fontSize: 10, padding: "1px 7px" } }, roleInfo.ar), !e.active && /* @__PURE__ */ React.createElement("span", { className: "chip neutral", style: { fontSize: 10 } }, "\u0645\u0639\u0637\u0644")))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 6, fontSize: 12, paddingTop: 10, borderTop: "1px solid var(--border-subtle)" } }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 8 } }, /* @__PURE__ */ React.createElement(Icon, { name: "id", size: 12, color: "var(--text-muted)" }), /* @__PURE__ */ React.createElement("span", { className: "num", style: { color: "var(--text-secondary)" } }, e.empNo)), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 8, minWidth: 0 } }, /* @__PURE__ */ React.createElement(Icon, { name: "mail", size: 12, color: "var(--text-muted)", style: { flexShrink: 0 } }), /* @__PURE__ */ React.createElement("span", { dir: "ltr", style: { color: "var(--text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", direction: "ltr", flex: 1 } }, e.email)), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 8 } }, /* @__PURE__ */ React.createElement(DeptDot, { id: e.dept, size: 8 }), /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-secondary)" } }, e.title))), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 6, marginTop: 12, paddingTop: 10, borderTop: "1px solid var(--border-subtle)" } }, /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } }, /* @__PURE__ */ React.createElement("div", { className: "num", style: { fontSize: 16, fontWeight: 700 } }, e.handled), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 10, color: "var(--text-muted)" } }, "\u0637\u0644\u0628 \u0645\u0639\u0627\u0644\u064E\u062C")), /* @__PURE__ */ React.createElement("button", { className: "btn sm ghost", title: "\u062A\u0639\u062F\u064A\u0640\u0644", onClick: () => setEditEmp(e) }, /* @__PURE__ */ React.createElement(Icon, { name: "edit", size: 13 })), /* @__PURE__ */ React.createElement("button", { className: "btn sm ghost", title: e.active ? "\u062A\u0639\u0637\u0640\u064A\u0644" : "\u062A\u0641\u0639\u0640\u064A\u0644", onClick: () => toggleActive(e.empNo) }, /* @__PURE__ */ React.createElement(Icon, { name: e.active ? "lock" : "check", size: 13 }))));
+      return /* @__PURE__ */ React.createElement("div", { key: e.empNo, className: "card lift", style: { padding: 16, position: "relative", opacity: e.active ? 1 : 0.6 } }, /* @__PURE__ */ React.createElement("div", { style: { position: "absolute", top: 0, insetInlineStart: 0, width: "100%", height: 4, background: dept?.color, borderRadius: "var(--r-lg) var(--r-lg) 0 0" } }), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 12, marginBottom: 12 } }, /* @__PURE__ */ React.createElement(Avatar, { name: e.ar, gender: e.gender, size: 52 }), /* @__PURE__ */ React.createElement("div", { style: { minWidth: 0, flex: 1 } }, /* @__PURE__ */ React.createElement("div", { style: { fontSize: 14, fontWeight: 700, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" } }, e.ar), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: "var(--text-muted)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }, dir: "ltr" }, e.en), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 6, marginTop: 4, flexWrap: "wrap" } }, /* @__PURE__ */ React.createElement("span", { className: `chip ${roleInfo.tone || "neutral"}`, style: { fontSize: 10, padding: "1px 7px" } }, roleInfo.ar), !e.active && /* @__PURE__ */ React.createElement("span", { className: "chip neutral", style: { fontSize: 10 } }, "\u0645\u0639\u0637\u0644")))), /* @__PURE__ */ React.createElement("div", { style: { display: "flex", flexDirection: "column", gap: 6, fontSize: 12, paddingTop: 10, borderTop: "1px solid var(--border-subtle)" } }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 8 } }, /* @__PURE__ */ React.createElement(Icon, { name: "id", size: 12, color: "var(--text-muted)" }), /* @__PURE__ */ React.createElement("span", { className: "num", style: { color: "var(--text-secondary)" } }, e.empNo)), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 8, minWidth: 0 } }, /* @__PURE__ */ React.createElement(Icon, { name: "mail", size: 12, color: "var(--text-muted)", style: { flexShrink: 0 } }), /* @__PURE__ */ React.createElement("span", { dir: "ltr", style: { color: "var(--text-secondary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", direction: "ltr", flex: 1 } }, e.email)), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 8 } }, /* @__PURE__ */ React.createElement(DeptDot, { id: e.dept, size: 8 }), /* @__PURE__ */ React.createElement("span", { style: { color: "var(--text-secondary)" } }, e.title))), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 6, marginTop: 12, paddingTop: 10, borderTop: "1px solid var(--border-subtle)" } }, /* @__PURE__ */ React.createElement("div", { style: { flex: 1 } }, /* @__PURE__ */ React.createElement("div", { className: "num", style: { fontSize: 16, fontWeight: 700 } }, e.handled), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 10, color: "var(--text-muted)" } }, "\u0637\u0644\u0628 \u0645\u0639\u0627\u0644\u064E\u062C")), /* @__PURE__ */ React.createElement("button", { className: "btn sm ghost", title: "\u062A\u0639\u062F\u064A\u0640\u0644", onClick: () => setEditEmp(e) }, /* @__PURE__ */ React.createElement(Icon, { name: "edit", size: 13 })), /* @__PURE__ */ React.createElement("button", { className: "btn sm ghost", title: e.active ? "\u062A\u0639\u0637\u0640\u064A\u0644" : "\u062A\u0641\u0639\u0640\u064A\u0644", onClick: () => toggleActive(e.empNo) }, /* @__PURE__ */ React.createElement(Icon, { name: e.active ? "lock" : "check", size: 13 }))));
     })), /* @__PURE__ */ React.createElement(
       AddEmployeeModal,
       {
@@ -5664,7 +6422,7 @@ ${bodyHtml}
       fontSize: 13,
       fontWeight: 300,
       fontStyle: "italic"
-    } }, "\u0625\u0646\u0640\u0634\u0627\u0621 \u062A\u0642\u0627\u0631\u064A\u0640\u0631 \u0645\u062E\u0635\u0640\u0635\u0629 \u0648\u062A\u0640\u0635\u062F\u064A\u0640\u0631\u0647\u0627 \u0628\u0635\u064A\u0640\u063A \u0645\u062A\u0639\u0640\u062F\u062F\u0629")), /* @__PURE__ */ React.createElement("button", { className: "btn primary", onClick: () => setNewOpen(true) }, /* @__PURE__ */ React.createElement(Icon, { name: "plus", size: 14 }), " \u062A\u0642\u0631\u064A\u0640\u0631 \u062C\u062F\u064A\u0640\u062F")), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12, marginBottom: 18 } }, templates.map((r) => /* @__PURE__ */ React.createElement(
+    } }, "\u0625\u0646\u0640\u0634\u0627\u0621 \u062A\u0642\u0627\u0631\u064A\u0640\u0631 \u0645\u062E\u0635\u0640\u0635\u0629 \u0648\u062A\u0640\u0635\u062F\u064A\u0640\u0631\u0647\u0627 \u0628\u0635\u064A\u0640\u063A \u0645\u062A\u0639\u0640\u062F\u062F\u0629")), /* @__PURE__ */ React.createElement("button", { className: "btn primary", onClick: () => setNewOpen(true) }, /* @__PURE__ */ React.createElement(Icon, { name: "plus", size: 14 }), " \u062A\u0642\u0631\u064A\u0640\u0631 \u062C\u062F\u064A\u0640\u062F")), /* @__PURE__ */ React.createElement("div", { className: "stagger stagger-up", style: { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: 12, marginBottom: 18 } }, templates.map((r) => /* @__PURE__ */ React.createElement(
       "button",
       {
         key: r.id,
@@ -6372,6 +7130,27 @@ ${bodyHtml}
       localStorage.setItem("cs_theme_v2", theme);
     }, [theme]);
     useEffect(() => {
+      if (typeof IntersectionObserver === "undefined") return;
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("in-view");
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { rootMargin: "0px 0px -10% 0px", threshold: 0.05 }
+      );
+      const t = setTimeout(() => {
+        document.querySelectorAll(".reveal-on-scroll:not(.in-view)").forEach((el) => observer.observe(el));
+      }, 60);
+      return () => {
+        clearTimeout(t);
+        observer.disconnect();
+      };
+    }, [page, authed, selectedTicket]);
+    useEffect(() => {
       if (authed) localStorage.setItem("cs_page", page);
     }, [page, authed]);
     useEffect(() => {
@@ -6746,7 +7525,7 @@ ${bodyHtml}
         },
         onOpenTicket: (tid) => openTicket(tid)
       }
-    ), /* @__PURE__ */ React.createElement("main", { style: { flex: 1, overflowY: "auto", padding: 20, background: "var(--bg-app)" } }, content)), /* @__PURE__ */ React.createElement(NewTicketModal, { open: newOpen, onClose: () => setNewOpen(false) }), /* @__PURE__ */ React.createElement(TransferModal, { open: !!transferTicket, onClose: () => setTransferTicket(null), ticket: transferTicket }), can("create_ticket") && !newOpen && !transferTicket && /* @__PURE__ */ React.createElement(
+    ), /* @__PURE__ */ React.createElement("main", { style: { flex: 1, overflowY: "auto", padding: 20, background: "var(--bg-app)" } }, /* @__PURE__ */ React.createElement("div", { "data-screen": true, key: selectedTicket ? `ticket-${selectedTicket.id}` : page }, content))), /* @__PURE__ */ React.createElement(NewTicketModal, { open: newOpen, onClose: () => setNewOpen(false) }), /* @__PURE__ */ React.createElement(TransferModal, { open: !!transferTicket, onClose: () => setTransferTicket(null), ticket: transferTicket }), can("create_ticket") && !newOpen && !transferTicket && /* @__PURE__ */ React.createElement(
       "button",
       {
         className: "mobile-fab-global",
