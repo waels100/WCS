@@ -76,6 +76,15 @@
   --rule:         rgba(17, 68, 140, 0.30);   /* Editorial seam, subtle in light blue */
   --rule-bold:    rgba(17, 68, 140, 0.55);   /* For 2px headings */
 
+  /* === Status: in-progress — NWC theme uses deep brand blue (no gold) === */
+  --status-active:     var(--petrol-deep);
+  --status-active-bg:  var(--petrol-tint);
+  /* === Timeline event tones that were gold in editorial — overridden in NWC === */
+  --tl-transfer:       var(--aubergine);     /* event: transfer */
+  --tl-transfer-bg:    var(--aubergine-tint);
+  --tl-reopen:         var(--petrol);        /* event: reopen */
+  --tl-reopen-bg:      var(--petrol-tint);
+
   /* ============ BACKWARD-COMPAT MAPPING ============ */
   --brand-50:   var(--petrol-tint);
   --brand-100:  var(--petrol-tint);
@@ -173,6 +182,15 @@ html[data-theme="dark"] {
   --hair-bold:    rgba(14, 14, 14, 0.40);
   --rule:         var(--ink);          /* In editorial mode, full ink is correct */
   --rule-bold:    var(--ink);
+
+  /* === Status: in-progress — editorial keeps the original gold === */
+  --status-active:     var(--gold);
+  --status-active-bg:  var(--gold-tint);
+  /* === Timeline event tones — editorial keeps original gold for transfer/reopen === */
+  --tl-transfer:       var(--gold);
+  --tl-transfer-bg:    var(--gold-tint);
+  --tl-reopen:         var(--gold);
+  --tl-reopen-bg:      var(--gold-tint);
 
   /* === Brand accents — editorial archive tones === */
   --petrol:       #0E4D4D;
@@ -317,13 +335,14 @@ body::before {
   transition: background 0.15s ease;
 }
 .chip-dot { width: 6px; height: 6px; border-radius: 999px; background: currentColor; }
-.chip.ok      { color: var(--moss);       background: var(--moss-tint); }
-.chip.warn    { color: var(--gold);       background: var(--gold-tint); }
-.chip.danger  { color: var(--vermillion); background: var(--vermillion-tint); }
-.chip.info    { color: var(--petrol);     background: var(--petrol-tint); }
-.chip.neutral { color: var(--ink-3);      background: var(--paper-card); border-color: var(--hair-strong); }
-.chip.purple  { color: var(--aubergine);  background: var(--aubergine-tint); }
-.chip.teal    { color: var(--slate);      background: var(--slate-tint); }
+.chip.ok      { color: var(--moss);          background: var(--moss-tint); }
+.chip.warn    { color: var(--gold);          background: var(--gold-tint); }
+.chip.danger  { color: var(--vermillion);    background: var(--vermillion-tint); }
+.chip.info    { color: var(--petrol);        background: var(--petrol-tint); }
+.chip.active  { color: var(--status-active); background: var(--status-active-bg); }
+.chip.neutral { color: var(--ink-3);         background: var(--paper-card); border-color: var(--hair-strong); }
+.chip.purple  { color: var(--aubergine);     background: var(--aubergine-tint); }
+.chip.teal    { color: var(--slate);         background: var(--slate-tint); }
 
 /* ============ BUTTONS ============ */
 .btn {
@@ -1115,13 +1134,13 @@ window.__API_BASE__ = '/__csh_mock__/backend/api/index.php';
       L5: 'مديـر النظـام',
     };
     const presets = {
-      created:  { title: 'إنـشاء الطلب',     icon: 'plus',     tone: 'brand' },
-      comment:  { title: 'تعـليق',          icon: 'message',  tone: 'info' },
-      transfer: { title: 'تحـويل الطلب',     icon: 'transfer', tone: 'warn' },
-      close:    { title: 'إغـلاق الطلب',     icon: 'check',    tone: 'ok' },
-      reopen:   { title: 'إعادة فتـح الطلب', icon: 'refresh',  tone: 'warn' },
-      status:   { title: 'تغيـير الحـالة',   icon: 'info',     tone: 'info' },
-      assign:   { title: 'تعيـين موظف',     icon: 'user',     tone: 'brand' },
+      created:  { title: 'إنـشاء الطلب',     icon: 'plus',     tone: 'brand'   },
+      comment:  { title: 'تعـليق',          icon: 'message',  tone: 'info'    },
+      transfer: { title: 'تحـويل الطلب',     icon: 'transfer', tone: 'tl-transfer' },
+      close:    { title: 'إغـلاق الطلب',     icon: 'check',    tone: 'ok'      },
+      reopen:   { title: 'إعادة فتـح الطلب', icon: 'refresh',  tone: 'tl-reopen'   },
+      status:   { title: 'تغيـير الحـالة',   icon: 'info',     tone: 'info'    },
+      assign:   { title: 'تعيـين موظف',     icon: 'user',     tone: 'brand'   },
     };
     const p = presets[kind] || { title: 'إجراء', icon: 'info', tone: 'info' };
     const userRole = me?.user?.role || extra.role || '';
@@ -1793,7 +1812,7 @@ react-dom/cjs/react-dom-client.production.js:
   ];
   const STATUSES = [
     { id: "new", ar: "\u062C\u062F\u064A\u062F", en: "New", tone: "info" },
-    { id: "progress", ar: "\u0642\u064A\u062F \u0627\u0644\u0645\u0640\u0639\u0627\u0644\u062C\u0629", en: "In Progress", tone: "warn" },
+    { id: "progress", ar: "\u0642\u064A\u062F \u0627\u0644\u0645\u0640\u0639\u0627\u0644\u062C\u0629", en: "In Progress", tone: "active" },
     { id: "transfer", ar: "\u0645\u062D\u0648\u064E\u0651\u0644\u0629", en: "Transferred", tone: "purple" },
     { id: "waiting", ar: "\u0628\u0627\u0646\u062A\u0640\u0638\u0627\u0631 \u0627\u0644\u0639\u0645\u0640\u064A\u0644", en: "Waiting", tone: "teal" },
     { id: "closed", ar: "\u0645\u063A\u0644\u0640\u0642\u0629", en: "Closed", tone: "ok" },
@@ -4164,7 +4183,7 @@ ${bodyHtml}
         size: 170,
         thickness: 22,
         segments: statusCounts.progress + statusCounts.waiting + statusCounts.overdue + statusCounts.closed > 0 ? [
-          { v: statusCounts.progress, color: "var(--petrol)" },
+          { v: statusCounts.progress, color: "var(--status-active)" },
           { v: statusCounts.waiting, color: "var(--slate)" },
           { v: statusCounts.overdue, color: "var(--vermillion)" },
           { v: statusCounts.closed, color: "var(--moss)" }
@@ -4172,7 +4191,7 @@ ${bodyHtml}
         center: /* @__PURE__ */ React.createElement("div", null, /* @__PURE__ */ React.createElement("div", { className: "num", style: { fontSize: 28, fontWeight: 700 } }, openCount), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 11, color: "var(--text-muted)" } }, "\u0637\u0644\u0628 \u0646\u0634\u0637"))
       }
     )), /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: "1fr 1fr", gap: 6, fontSize: 12 } }, [
-      { l: "\u0642\u064A\u062F \u0627\u0644\u0645\u0640\u0639\u0627\u0644\u062C\u0629", v: statusCounts.progress, c: "var(--petrol)" },
+      { l: "\u0642\u064A\u062F \u0627\u0644\u0645\u0640\u0639\u0627\u0644\u062C\u0629", v: statusCounts.progress, c: "var(--status-active)" },
       { l: "\u0628\u0627\u0646\u062A\u0640\u0638\u0627\u0631 \u0627\u0644\u0639\u0645\u0640\u064A\u0644", v: statusCounts.waiting, c: "var(--slate)" },
       { l: "\u0645\u062A\u0623\u062E\u0631\u0629", v: statusCounts.overdue, c: "var(--vermillion)" },
       { l: "\u0645\u063A\u0640\u0644\u0642\u0629", v: statusCounts.closed, c: "var(--moss)" }
@@ -4540,7 +4559,7 @@ ${bodyHtml}
   };
   const STATUS_TINT = {
     new: { color: "var(--petrol)", bg: "var(--petrol-tint)" },
-    progress: { color: "var(--gold)", bg: "var(--gold-tint)" },
+    progress: { color: "var(--status-active)", bg: "var(--status-active-bg)" },
     waiting: { color: "var(--slate)", bg: "var(--slate-tint)" },
     transfer: { color: "var(--aubergine)", bg: "var(--aubergine-tint)" },
     overdue: { color: "var(--vermillion)", bg: "var(--vermillion-tint)" },
@@ -4637,7 +4656,7 @@ ${bodyHtml}
         fontWeight: 700
       } }, scopedTickets.length)
     ), statusCounts.map((s) => {
-      const toneMap = { info: "petrol", ok: "moss", warn: "gold", danger: "vermillion", purple: "aubergine", teal: "slate" };
+      const toneMap = { info: "petrol", active: "status-active", ok: "moss", warn: "gold", danger: "vermillion", purple: "aubergine", teal: "slate" };
       const tone = toneMap[s.tone] || "ink-2";
       const isActive = filters.status === s.id;
       return /* @__PURE__ */ React.createElement(
@@ -4798,7 +4817,7 @@ ${bodyHtml}
     const cols = STATUSES.filter((s) => s.id !== "overdue");
     return /* @__PURE__ */ React.createElement("div", { style: { display: "grid", gridTemplateColumns: `repeat(${cols.length}, minmax(240px, 1fr))`, gap: 14, overflowX: "auto" } }, cols.map((s) => {
       const items = tickets.filter((t) => t.status === s.id);
-      const toneMap = { info: "petrol", ok: "moss", warn: "gold", danger: "vermillion", purple: "aubergine", teal: "slate" };
+      const toneMap = { info: "petrol", active: "status-active", ok: "moss", warn: "gold", danger: "vermillion", purple: "aubergine", teal: "slate" };
       const tone = toneMap[s.tone] || "ink-3";
       return /* @__PURE__ */ React.createElement("div", { key: s.id, style: {
         background: "var(--paper-warm)",
@@ -5137,18 +5156,24 @@ ${bodyHtml}
   };
   const Timeline = ({ events }) => {
     if (!events.length) return /* @__PURE__ */ React.createElement("div", { style: { fontSize: 12, color: "var(--text-muted)", padding: 20, textAlign: "center" } }, "\u0644\u0627 \u064A\u0648\u062C\u062F \u0645\u0633\u0627\u0631 \u0628\u0639\u062F");
-    return /* @__PURE__ */ React.createElement("div", { style: { position: "relative", paddingInlineStart: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { position: "absolute", insetInlineStart: 22, top: 10, bottom: 10, width: 2, background: "var(--border-subtle)" } }), events.map((e, i) => /* @__PURE__ */ React.createElement("div", { key: i, className: "hstack", style: { gap: 14, marginBottom: 16, alignItems: "flex-start", position: "relative" } }, /* @__PURE__ */ React.createElement("div", { style: {
-      width: 32,
-      height: 32,
-      borderRadius: 8,
-      background: `var(--${e.tone === "info" ? "brand" : e.tone}-100)`,
-      color: `var(--${e.tone === "info" ? "brand-700" : e.tone + "-600"})`,
-      display: "grid",
-      placeItems: "center",
-      flexShrink: 0,
-      border: "2px solid var(--bg-card)",
-      zIndex: 1
-    } }, /* @__PURE__ */ React.createElement(Icon, { name: e.icon, size: 15 })), /* @__PURE__ */ React.createElement("div", { style: { flex: 1, padding: 12, background: "var(--bg-sunken)", borderRadius: 8 } }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 8, marginBottom: 4 } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: 13 } }, e.title), /* @__PURE__ */ React.createElement("span", { className: "spacer" }), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, color: "var(--text-muted)" }, className: "num" }, e.time)), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 12, color: "var(--text-secondary)", marginBottom: 6 } }, e.body), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 6 } }, /* @__PURE__ */ React.createElement(Avatar, { name: e.actor, size: 20 }), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, color: "var(--text-muted)" } }, e.actor, " \xB7 ", e.role))))));
+    const toneToken = { info: "petrol", brand: "petrol", active: "status-active", ok: "moss", warn: "gold", danger: "vermillion", purple: "aubergine", teal: "slate", "tl-transfer": "tl-transfer", "tl-reopen": "tl-reopen" };
+    const toneTint = { petrol: "petrol-tint", "status-active": "status-active-bg", moss: "moss-tint", gold: "gold-tint", vermillion: "vermillion-tint", aubergine: "aubergine-tint", slate: "slate-tint", "tl-transfer": "tl-transfer-bg", "tl-reopen": "tl-reopen-bg" };
+    return /* @__PURE__ */ React.createElement("div", { style: { position: "relative", paddingInlineStart: 16 } }, /* @__PURE__ */ React.createElement("div", { style: { position: "absolute", insetInlineStart: 22, top: 10, bottom: 10, width: 2, background: "var(--hair-strong)" } }), events.map((e, i) => {
+      const accent = toneToken[e.tone] || "petrol";
+      const tint = toneTint[accent] || "petrol-tint";
+      return /* @__PURE__ */ React.createElement("div", { key: i, className: "hstack", style: { gap: 14, marginBottom: 16, alignItems: "flex-start", position: "relative" } }, /* @__PURE__ */ React.createElement("div", { style: {
+        width: 32,
+        height: 32,
+        borderRadius: 0,
+        background: `var(--${tint})`,
+        color: `var(--${accent})`,
+        border: `1px solid var(--${accent})`,
+        display: "grid",
+        placeItems: "center",
+        flexShrink: 0,
+        zIndex: 1
+      } }, /* @__PURE__ */ React.createElement(Icon, { name: e.icon, size: 15 })), /* @__PURE__ */ React.createElement("div", { style: { flex: 1, padding: 12, background: "var(--paper-warm)", border: "1px solid var(--hair)" } }, /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 8, marginBottom: 4 } }, /* @__PURE__ */ React.createElement("strong", { style: { fontSize: 13 } }, e.title), /* @__PURE__ */ React.createElement("span", { className: "spacer" }), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, color: "var(--ink-3)" }, className: "num" }, e.time)), /* @__PURE__ */ React.createElement("div", { style: { fontSize: 12, color: "var(--ink-2)", marginBottom: 6 } }, e.body), /* @__PURE__ */ React.createElement("div", { className: "hstack", style: { gap: 6 } }, /* @__PURE__ */ React.createElement(Avatar, { name: e.actor, size: 20 }), /* @__PURE__ */ React.createElement("span", { style: { fontSize: 11, color: "var(--ink-3)" } }, e.actor, " \xB7 ", e.role))));
+    }));
   };
   const FileUploader = ({ files, setFiles, accept = "image/*,.pdf", compact = false }) => {
     const inputRef = React.useRef(null);
